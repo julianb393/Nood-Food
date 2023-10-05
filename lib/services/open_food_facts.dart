@@ -12,6 +12,6 @@ Future<Food> getFood(String barcode) async {
   if (response.statusCode == 200) {
     return Food.fromJson(jsonDecode(response.body));
   } else {
-    throw Exception('Failed to load album');
+    throw Exception('Failed to load food data');
   }
 }

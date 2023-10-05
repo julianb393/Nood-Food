@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:nood_food/services/open_food_facts.dart';
+import 'package:pie_chart/pie_chart.dart';
+import 'package:weekly_date_picker/weekly_date_picker.dart';
 
 import '../model/food.dart';
 
@@ -15,6 +18,22 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   String _barcode = '';
   Food? _food;
+  DateTime _selectedDay = DateTime.now();
+
+  final dataMap = <String, double>{
+    "Fat": 1,
+    "Sugars": 1,
+    "Saturated Fat": 1,
+    "Protein": 1,
+    "Sodium": 2,
+  };
+  final colorList = <Color>[
+    const Color(0xfffdcb6e),
+    const Color(0xff0984e3),
+    const Color(0xfffd79a8),
+    const Color(0xffe17055),
+    const Color(0xff6c5ce7),
+  ];
 
   void _scanBarcode() async {
     String barcodeScanRes;
@@ -41,23 +60,52 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Nood Food'),
-      ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(30.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
-              'You have scanned this barcode:',
+            const Text('Welcome <User>'),
+            const SizedBox(height: 20.0),
+            const Text('<Month>, <Year>'),
+            WeeklyDatePicker(
+              selectedDay: _selectedDay,
+              changeDay: (value) => setState(() {
+                _selectedDay = value;
+              }),
+              enableWeeknumberText: false,
             ),
-            Text(
-              _barcode,
-              style: Theme.of(context).textTheme.headline4,
+            const Text('Calories consumed today:'),
+            FAProgressBar(
+              currentValue: 1054,
+              // size: 25,
+              maxValue: 2056,
+              changeColorValue: 2000,
+              changeProgressColor: Colors.red,
+              backgroundColor: Colors.white,
+              progressColor: Colors.green,
+              animatedDuration: const Duration(milliseconds: 300),
+              direction: Axis.horizontal,
+              verticalDirection: VerticalDirection.up,
+              displayText: 'kcal',
             ),
-            _food == null
-                ? Text('Nothing scanned yet')
-                : Text('${_food?.brand}/${_food?.name}'),
+            SizedBox(height: 10),
+            PieChart(
+              dataMap: dataMap,
+              chartType: ChartType.disc,
+              // baseChartColor: Colors.grey[50]!.withOpacity(0.15),
+              // colorList: colorList,
+              chartValuesOptions: const ChartValuesOptions(
+                showChartValueBackground: true,
+                showChartValues: true,
+                showChartValuesInPercentage: false,
+                showChartValuesOutside: false,
+                decimalPlaces: 1,
+              ),
+              centerText: '1054',
+              // totalValue: 20,
+            ),
           ],
         ),
       ),
@@ -65,7 +113,7 @@ class _HomeState extends State<Home> {
         onPressed: _scanBarcode,
         tooltip: 'scan',
         child: const Icon(Icons.camera_enhance_sharp),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
