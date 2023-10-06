@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
@@ -19,7 +20,6 @@ class _HomeState extends State<Home> {
   String _barcode = '';
   Food? _food;
   DateTime _selectedDay = DateTime.now();
-
   final dataMap = <String, double>{
     "Fat": 1,
     "Sugars": 1,
@@ -63,12 +63,12 @@ class _HomeState extends State<Home> {
       body: Padding(
         padding: const EdgeInsets.all(30.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            const Text('Welcome <User>'),
-            const SizedBox(height: 20.0),
-            const Text('<Month>, <Year>'),
+            const Row(children: [Text('Welcome Julian!')]),
+            // const SizedBox(height: 20.0),
+            Text(DateFormat.yMMMMd().format(_selectedDay)),
             WeeklyDatePicker(
               selectedDay: _selectedDay,
               changeDay: (value) => setState(() {
@@ -106,13 +106,9 @@ class _HomeState extends State<Home> {
               centerText: '1054',
               // totalValue: 20,
             ),
+            ElevatedButton(onPressed: () {}, child: Text('Edit Meals')),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _scanBarcode,
-        tooltip: 'scan',
-        child: const Icon(Icons.camera_enhance_sharp),
       ),
     );
   }
