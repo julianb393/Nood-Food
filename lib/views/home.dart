@@ -4,11 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:nood_food/services/open_food_facts.dart';
-import 'package:nood_food/views/edit_meals.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:weekly_date_picker/weekly_date_picker.dart';
 
 import '../model/food.dart';
+import 'edit_meals.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -114,7 +114,7 @@ class _HomeState extends State<Home> {
                       MaterialPageRoute(
                           builder: (context) => const EditMeals()));
                 },
-                child: Text('Edit Meals')),
+                child: const Text('Edit Meals')),
           ],
         ),
       ),
