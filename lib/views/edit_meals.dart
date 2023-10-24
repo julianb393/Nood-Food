@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nood_food/views/meal_viewer.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class EditMeals extends StatelessWidget {
@@ -8,32 +9,40 @@ class EditMeals extends StatelessWidget {
   Widget build(BuildContext context) {
     Map<String, Map<String, double>> mealsToNutritions = {
       'Breakfast': {
+        'Carbohydrates': 1,
         "Fat": 1,
+        'Salt': 1,
         "Sugars": 1,
         "Saturated Fat": 1,
         "Protein": 1,
         "Sodium": 2,
       },
       'Lunch': {
+        'Carbohydrates': 1,
         "Fat": 1,
+        'Salt': 1,
         "Sugars": 1,
         "Saturated Fat": 1,
         "Protein": 1,
         "Sodium": 2,
       },
       'Dinner': {
+        'Carbohydrates': 1,
         "Fat": 1,
-        "Sugars": 0,
+        'Salt': 1,
+        "Sugars": 1,
         "Saturated Fat": 1,
         "Protein": 1,
         "Sodium": 2,
       },
       'Snacks': {
-        "Fat": 0,
-        "Sugars": 0,
-        "Saturated Fat": 0,
-        "Protein": 0,
-        "Sodium": 0,
+        'Carbohydrates': 1,
+        "Fat": 1,
+        'Salt': 1,
+        "Sugars": 1,
+        "Saturated Fat": 1,
+        "Protein": 1,
+        "Sodium": 2,
       }
     };
 
@@ -53,7 +62,10 @@ class EditMeals extends StatelessWidget {
                       kBottomNavigationBarHeight / 4),
               child: InkWell(
                 onTap: () {
-                  print('tapped');
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MealViewer(meal: meal)));
                 },
                 child: Card(
                   child: Column(
@@ -70,27 +82,5 @@ class EditMeals extends StatelessWidget {
         ],
       ),
     );
-    //   Text('Breakfast'),
-    //   Expanded(
-    //     child: breakfastDM.isEmpty
-    //         ? const SizedBox()
-    //         : PieChart(dataMap: breakfastDM),
-    //   ),
-    //   Text('Lunch'),
-    //   Expanded(
-    //       child: lunchDM.isEmpty
-    //           ? const SizedBox()
-    //           : PieChart(dataMap: lunchDM)),
-    //   Text('Dinner'),
-    //   Expanded(
-    //       child: dinnerDM.isEmpty
-    //           ? const SizedBox()
-    //           : PieChart(dataMap: dinnerDM)),
-    //   Text('Snacks'),
-    //   Expanded(
-    //       child: snacksDM.isEmpty
-    //           ? const SizedBox()
-    //           : PieChart(dataMap: snacksDM))
-    // ],
   }
 }
