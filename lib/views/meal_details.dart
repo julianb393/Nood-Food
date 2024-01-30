@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:nood_food/util/macronutrient.dart';
 import 'package:pie_chart/pie_chart.dart';
