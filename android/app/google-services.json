@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "225327685629",
+    "project_id": "nood-food-6cee5",
+    "storage_bucket": "nood-food-6cee5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:225327685629:android:35dade127a822f09ff4394",
+        "android_client_info": {
+          "package_name": "com.barkinggrizzly.noodfood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "225327685629-ib6slb9dfuega47pi0hjk28uctdqdhbm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7v_7mUMmgvOKmm6hV8IpzKthtIDKAKso"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "225327685629-ib6slb9dfuega47pi0hjk28uctdqdhbm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
