@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "225327685629-6v86l7cchn7lni0p7fe5e5km3tlmadut.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.barkinggrizzly.noodfood",
+            "certificate_hash": "6a075e39959f4939a6a57997677bd14c7ef7bda0"
+          }
+        },
+        {
           "client_id": "225327685629-ib6slb9dfuega47pi0hjk28uctdqdhbm.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "225327685629-ib6slb9dfuega47pi0hjk28uctdqdhbm.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "225327685629-b37brqkusip8ui3pqtoordka0ub7p6re.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.noodFood"
+              }
             }
           ]
         }

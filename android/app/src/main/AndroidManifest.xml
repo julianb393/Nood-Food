@@ -1,7 +1,6 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.nood_food">
-   <application
-        android:label="nood_food"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application
+        android:label="noodfood"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

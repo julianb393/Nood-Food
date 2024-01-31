@@ -1,4 +1,4 @@
-package com.example.nood_food
+package com.barkinggrizzly.noodfood
 
 import io.flutter.embedding.android.FlutterActivity
 
