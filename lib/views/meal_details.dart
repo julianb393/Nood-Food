@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/util/macronutrient.dart';
 import 'package:pie_chart/pie_chart.dart';
 
@@ -61,6 +62,8 @@ class MealDetails extends StatelessWidget {
       totalCarbs += food['carbs'] as num;
       totalFat += food['fat'] as num;
     });
+
+    AuthService().logout();
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 25, 15, 3),

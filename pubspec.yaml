@@ -45,6 +45,9 @@ dependencies:
   units_converter: ^2.1.1
   flutter_signin_button: ^2.0.0
   email_validator: ^2.1.17
+  firebase_auth: ^4.16.0
+  firebase_core: ^2.24.2
+  provider: ^6.1.1
 
 dev_dependencies:
   flutter_test:

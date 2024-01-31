@@ -5,17 +5,18 @@ import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/util/custom_widgets/my_form_field.dart';
+import 'package:nood_food/views/auth/login.dart';
 import 'package:nood_food/views/auth/register.dart';
 
-class Login extends StatefulWidget {
+class Register extends StatefulWidget {
   final Function toggleScreen;
-  const Login({super.key, required this.toggleScreen});
+  const Register({super.key, required this.toggleScreen});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<Register> createState() => _RegisterState();
 }
 
-class _LoginState extends State<Login> {
+class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   final _authService = AuthService();
   String inputEmail = '';
@@ -71,15 +72,17 @@ class _LoginState extends State<Login> {
                     // Would show whether login unsuccessful, otherwise
                     // navigate to home page
                     try {
-                      await _authService.loginWithEmail(
+                      NFUser? u = await _authService.registerWithEmail(
                           inputEmail, inputPassword);
+                      print(u?.uid);
                     } on FirebaseAuthException catch (error) {
                       // credentials issue
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             backgroundColor: Colors.redAccent,
-                            content: Text('Invalid email or password.'),
+                            content:
+                                Text('This email has already been registed.'),
                           ),
                         );
                         print(error);
@@ -97,8 +100,10 @@ class _LoginState extends State<Login> {
                         print(error);
                       }
                     }
+
+                    _authService.logout();
                   },
-                  child: const Text('Login'),
+                  child: const Text('Register'),
                 ),
               ],
             ),
@@ -116,7 +121,7 @@ class _LoginState extends State<Login> {
             alignment: Alignment.bottomRight,
             child: TextButton(
               onPressed: () => widget.toggleScreen(),
-              child: const Text('or Register'),
+              child: const Text('or Login'),
             ),
           )
         ],

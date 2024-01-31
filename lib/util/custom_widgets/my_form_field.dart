@@ -5,12 +5,14 @@ class MyTextFormField extends StatefulWidget {
   final Icon? icon;
   final bool hideText;
   final String? Function(String?)? validator;
+  final Function(String)? onChanged;
   const MyTextFormField({
     super.key,
     required this.labelText,
     this.icon,
     this.hideText = false,
     this.validator,
+    this.onChanged,
   });
 
   @override
@@ -36,6 +38,7 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      onChanged: widget.onChanged,
       validator: widget.validator,
       obscureText: _textIsHidden,
       decoration: InputDecoration(
@@ -57,6 +60,9 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
           borderSide: BorderSide(color: Colors.grey, width: 1.0),
         ),
         errorBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red, width: 1.0),
+        ),
+        focusedErrorBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: Colors.red, width: 1.0),
         ),
       ),
