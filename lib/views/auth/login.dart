@@ -68,34 +68,33 @@ class _LoginState extends State<Login> {
                       print('Form is invalid');
                       return;
                     }
+
                     // Would show whether login unsuccessful, otherwise
                     // navigate to home page
+                    String errMsg;
                     try {
                       await _authService.loginWithEmail(
                           inputEmail, inputPassword);
+                      return;
                     } on FirebaseAuthException catch (error) {
-                      // credentials issue
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            backgroundColor: Colors.redAccent,
-                            content: Text('Invalid email or password.'),
-                          ),
-                        );
-                        print(error);
-                      }
+                      // credentiala issue
+                      errMsg = 'Invalid email or password.';
+                      print(error);
                     } catch (error) {
                       // server issue
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            backgroundColor: Colors.redAccent,
-                            content: Text('We\'re having issues connecting to' +
-                                ' our server. Please try again later...'),
-                          ),
-                        );
-                        print(error);
-                      }
+                      errMsg = 'We\'re having issues connecting to' +
+                          ' our server. Please try again later...';
+                      print(error);
+                    }
+
+                    // This check is needed for async functions for snackbars.
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.redAccent,
+                          content: Text(errMsg),
+                        ),
+                      );
                     }
                   },
                   child: const Text('Login'),

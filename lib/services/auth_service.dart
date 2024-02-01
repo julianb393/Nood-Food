@@ -25,14 +25,12 @@ class AuthService {
 
   Future<NFUser?> loginWithEmail(String email, String password) async {
     UserCredential? cred;
-
     cred = await _auth.signInWithEmailAndPassword(
         email: email, password: password);
     return _parseUserFromFirebaseUser(cred.user);
   }
 
   Future<void> logout() async {
-    UserCredential? cred;
     await _auth.signOut();
   }
 }

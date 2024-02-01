@@ -71,37 +71,31 @@ class _RegisterState extends State<Register> {
                     }
                     // Would show whether login unsuccessful, otherwise
                     // navigate to home page
+                    String errMsg;
                     try {
-                      NFUser? u = await _authService.registerWithEmail(
+                      await _authService.registerWithEmail(
                           inputEmail, inputPassword);
-                      print(u?.uid);
+                      return;
                     } on FirebaseAuthException catch (error) {
-                      // credentials issue
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            backgroundColor: Colors.redAccent,
-                            content:
-                                Text('This email has already been registed.'),
-                          ),
-                        );
-                        print(error);
-                      }
+                      // credentiala issue
+                      errMsg = 'This email has already been registed.';
+                      print(error);
                     } catch (error) {
                       // server issue
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            backgroundColor: Colors.redAccent,
-                            content: Text('We\'re having issues connecting to' +
-                                ' our server. Please try again later...'),
-                          ),
-                        );
-                        print(error);
-                      }
+                      errMsg = 'We\'re having issues connecting to' +
+                          ' our server. Please try again later...';
+                      print(error);
                     }
 
-                    _authService.logout();
+                    // This check is needed for async functions for snackbars.
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.redAccent,
+                          content: Text(errMsg),
+                        ),
+                      );
+                    }
                   },
                   child: const Text('Register'),
                 ),

@@ -13,6 +13,7 @@ class Authenticator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final NFUser? user = Provider.of<NFUser?>(context);
+    print('this is the user: ' + user.toString());
     return user != null ? const Home() : const LoginRegisterSelector();
   }
 }
