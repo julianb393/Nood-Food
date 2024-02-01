@@ -1,9 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:nood_food/models/nf_user.dart';
-import 'package:nood_food/views/auth/login.dart';
 import 'package:nood_food/views/auth/login_register_selector.dart';
-import 'package:nood_food/views/auth/register.dart';
 import 'package:nood_food/views/home.dart';
 import 'package:provider/provider.dart';
 

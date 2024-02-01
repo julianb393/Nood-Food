@@ -2,11 +2,8 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/util/custom_widgets/my_form_field.dart';
-import 'package:nood_food/views/auth/login.dart';
-import 'package:nood_food/views/auth/register.dart';
 
 class Register extends StatefulWidget {
   final Function toggleScreen;
@@ -21,6 +18,12 @@ class _RegisterState extends State<Register> {
   final _authService = AuthService();
   String inputEmail = '';
   String inputPassword = '';
+
+  bool _validatePassowrd(String password) {
+    return password.length >= 6 &&
+        password.contains('[0-9]') &&
+        password.contains('[~`!@#\$%^&*()-_+=|}]{["\':;?/>.<,]');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +57,11 @@ class _RegisterState extends State<Register> {
                 ),
                 const SizedBox(height: 5),
                 MyTextFormField(
+                  validator: (password) {
+                    return password != null && _validatePassowrd(password)
+                        ? null
+                        : 'Please enter a password with the following:\n6 characters, 1 number, and 1 special character';
+                  },
                   labelText: 'Password',
                   icon: const Icon(Icons.lock),
                   hideText: true,
