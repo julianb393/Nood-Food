@@ -63,52 +63,56 @@ class MealDetails extends StatelessWidget {
       totalFat += food['fat'] as num;
     });
 
-    AuthService().logout();
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(15, 25, 15, 3),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Breakfast'),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              DataTable(
-                columns: const [
-                  DataColumn(label: Text('Food')),
-                  DataColumn(label: Text('Quantity')),
-                  DataColumn(label: Text('Calories'))
-                ],
-                rows: foodSamples
-                    .map((food) => DataRow(cells: [
-                          DataCell(Text(food['name']!)),
-                          DataCell(Text(food['quantity']!)),
-                          DataCell(Text(food['calories']!)),
-                        ]))
-                    .toList(),
-              ),
-              PieChart(
-                chartRadius: 170,
-                dataMap: {
-                  'protein': totalProtein,
-                  'carbs': totalCarbs,
-                  'fat': totalFat
-                },
-                formatChartValues: (double val) => '$val g',
-                centerText:
-                    '${computeTotalCalories(totalProtein, totalCarbs, totalFat)} kcal',
-              ),
-            ],
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: FloatingActionButton(
-              child: const Icon(Icons.add),
-              onPressed: () {},
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(mealName),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(15, 25, 15, 3),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            // const Text('Breakfast'),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                DataTable(
+                  columns: const [
+                    DataColumn(label: Text('Food')),
+                    DataColumn(label: Text('Quantity')),
+                    DataColumn(label: Text('Calories'))
+                  ],
+                  rows: foodSamples
+                      .map((food) => DataRow(cells: [
+                            DataCell(Text(food['name']!)),
+                            DataCell(Text(food['quantity']!)),
+                            DataCell(Text(food['calories']!)),
+                          ]))
+                      .toList(),
+                ),
+                PieChart(
+                  chartRadius: 170,
+                  dataMap: {
+                    'protein': totalProtein,
+                    'carbs': totalCarbs,
+                    'fat': totalFat
+                  },
+                  formatChartValues: (double val) => '$val g',
+                  centerText:
+                      '${computeTotalCalories(totalProtein, totalCarbs, totalFat)} kcal',
+                ),
+              ],
             ),
-          ),
-        ],
+            Align(
+              alignment: Alignment.bottomRight,
+              child: FloatingActionButton(
+                child: const Icon(Icons.add),
+                onPressed: () {},
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

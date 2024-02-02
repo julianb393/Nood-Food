@@ -2,10 +2,8 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/util/custom_widgets/my_form_field.dart';
-import 'package:nood_food/views/auth/register.dart';
 
 class Login extends StatefulWidget {
   final Function toggleScreen;
