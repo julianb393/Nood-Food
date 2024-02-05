@@ -21,8 +21,10 @@ class _LoginRegisterSelectorState extends State<LoginRegisterSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoginScreen
-        ? Login(toggleScreen: _toggleScreen)
-        : Register(toggleScreen: _toggleScreen);
+    return Scaffold(
+      body: isLoginScreen
+          ? Login(toggleScreen: _toggleScreen)
+          : Register(toggleScreen: _toggleScreen),
+    );
   }
 }
