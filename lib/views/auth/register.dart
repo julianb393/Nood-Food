@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:nood_food/services/auth_service.dart';
-import 'package:nood_food/util/custom_widgets/my_form_field.dart';
+import 'package:nood_food/common/form_decoration.dart';
 
 class Register extends StatefulWidget {
   final Function toggleScreen;
@@ -16,6 +16,7 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   final _authService = AuthService();
+  bool _hidePassword = true;
   String inputEmail = '';
   String inputPassword = '';
 
@@ -45,26 +46,37 @@ class _RegisterState extends State<Register> {
             key: _formKey,
             child: Column(
               children: [
-                MyTextFormField(
+                TextFormField(
                   validator: (email) {
                     return email != null && EmailValidator.validate(email)
                         ? null
                         : 'Please enter a valid email address';
                   },
-                  labelText: 'Email',
-                  icon: const Icon(Icons.email),
+                  decoration: formDecoration.copyWith(
+                    labelText: 'Email',
+                    icon: const Icon(Icons.email),
+                  ),
                   onChanged: (val) => setState(() => inputEmail = val),
                 ),
                 const SizedBox(height: 5),
-                MyTextFormField(
+                TextFormField(
                   validator: (password) {
                     return password != null && _validatePassowrd(password)
                         ? null
                         : 'Please enter a password with the following:\n6 characters, 1 number, and 1 special character';
                   },
-                  labelText: 'Password',
-                  icon: const Icon(Icons.lock),
-                  hideText: true,
+                  decoration: formDecoration.copyWith(
+                    labelText: 'Password',
+                    icon: const Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      onPressed: () =>
+                          setState(() => _hidePassword = !_hidePassword),
+                      icon: _hidePassword
+                          ? const Icon(Icons.remove_red_eye)
+                          : const Icon(Icons.remove_red_eye_outlined),
+                    ),
+                  ),
+                  obscureText: true,
                   onChanged: (val) => setState(() => inputPassword = val),
                 ),
                 const SizedBox(height: 5),
