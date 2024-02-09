@@ -54,7 +54,7 @@ class _RegisterState extends State<Register> {
                   },
                   decoration: formDecoration.copyWith(
                     labelText: 'Email',
-                    icon: const Icon(Icons.email),
+                    prefixIcon: const Icon(Icons.email),
                   ),
                   onChanged: (val) => setState(() => inputEmail = val),
                 ),
@@ -67,7 +67,7 @@ class _RegisterState extends State<Register> {
                   },
                   decoration: formDecoration.copyWith(
                     labelText: 'Password',
-                    icon: const Icon(Icons.lock),
+                    prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       onPressed: () =>
                           setState(() => _hidePassword = !_hidePassword),
