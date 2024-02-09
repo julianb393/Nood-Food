@@ -5,7 +5,6 @@ import 'package:nood_food/firebase_options.dart';
 import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/views/auth/authenticator.dart';
-import 'package:nood_food/views/pages/home.dart';
 import 'package:provider/provider.dart';
 
 void main() async {

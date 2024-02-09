@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:nood_food/models/food.dart';
+import 'package:nood_food/util/meal_type.dart';
 
 class DBService {
   final String? uid;
@@ -10,6 +11,18 @@ class DBService {
 
   final CollectionReference _userCollection =
       FirebaseFirestore.instance.collection('users');
+
+  // Food _parseFoodFromSnapshot(QuerySnapshot snapshot, MealType meal) {
+  //   return;
+  // }
+
+  // Future<List<Food>> getFoodsFromDate(DateTime date, MealType meal) async {
+  //   return _userCollection
+  //       .doc(uid)
+  //       .collection(_df.format(date))
+  //       .snapshots()
+  //       .map((snapshot) => _parseFoodFromSnapshot(snapshot, meal)).toList();
+  // }
 
   Future<void> writeFood(DateTime date, Food food) async {
     await _userCollection

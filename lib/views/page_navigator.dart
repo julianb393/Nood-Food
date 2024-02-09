@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nood_food/services/db_service.dart';
 import 'package:nood_food/util/macronutrient.dart';
 import 'package:nood_food/views/pages/account.dart';
 import 'package:nood_food/views/pages/home.dart';
