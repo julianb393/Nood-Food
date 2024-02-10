@@ -18,7 +18,7 @@ class FoodEditor extends StatefulWidget {
 }
 
 class _FoodEditorState extends State<FoodEditor> {
-  final _dbService = DBService(uid: AuthService().getCurrentUserUid());
+  final DBService _dbService = DBService(uid: AuthService().userUid);
   final _formKey = GlobalKey<FormState>();
 
   // Form controllers for the scanner
@@ -48,15 +48,15 @@ class _FoodEditorState extends State<FoodEditor> {
   void _updateSummary() {
     _proteinConsumed = _protein == 0
         ? 0.0
-        : double.parse((_amount / _protein * _consumed).toStringAsFixed(2));
+        : double.parse((_protein / _amount * _consumed).toStringAsFixed(2));
 
     _carbsConsumed = _carbs == 0
         ? 0.0
-        : double.parse((_amount / _carbs * _consumed).toStringAsFixed(2));
+        : double.parse((_carbs / _amount * _consumed).toStringAsFixed(2));
 
     _fatConsumed = _fat == 0
         ? 0.0
-        : double.parse((_amount / _fat * _consumed).toStringAsFixed(2));
+        : double.parse((_fat / _amount * _consumed).toStringAsFixed(2));
 
     _caloriesConsumed =
         computeTotalCalories(_proteinConsumed, _carbsConsumed, _fatConsumed);
@@ -279,8 +279,14 @@ class _FoodEditorState extends State<FoodEditor> {
               print('The form is invalid.');
               return;
             }
-            Food newFood = Food(_name, _consumed, _proteinConsumed,
-                _carbsConsumed, _fatConsumed, widget.mealType);
+            Food newFood = Food(
+              name: _name,
+              quantity: _consumed,
+              protein: _proteinConsumed,
+              carbs: _carbsConsumed,
+              fat: _fatConsumed,
+              meal: widget.mealType,
+            );
             _dbService.writeFood(DateTime.now(), newFood);
             Navigator.pop(context);
           },

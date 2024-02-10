@@ -18,7 +18,7 @@ extension MealTypeExtension on MealType {
     }
   }
 
-  MealType parseString(String str) {
+  static MealType parseString(String str) {
     return MealType.values.byName(str);
   }
 }

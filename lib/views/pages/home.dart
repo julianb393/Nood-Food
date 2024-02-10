@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:nood_food/models/food.dart';
 import 'package:nood_food/util/macronutrient.dart';
 import 'package:nood_food/util/style.dart';
 import 'package:pie_chart/pie_chart.dart';
+import 'package:provider/provider.dart';
 import 'package:weekly_date_picker/weekly_date_picker.dart';
 
 class Home extends StatefulWidget {
@@ -13,18 +15,27 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  double dailyCaloriesAllowed = 3200.0;
-  Map<String, double> totalConsumedSample = {
-    'protein': 120,
-    'carbs': 300,
-    'fat': 150,
-    'calories': computeTotalCalories(120, 300, 150),
-  };
-
   DateTime _selectedDay = DateTime.now();
+
+  late double _consumedProtein;
+  late double _consumedCarbs;
+  late double _consumedFat;
+
+  void _computeConsumedMacros(List<Food> foods) {
+    _consumedProtein = 0.0;
+    _consumedCarbs = 0.0;
+    _consumedFat = 0.0;
+    for (Food food in foods) {
+      _consumedProtein += food.protein;
+      _consumedCarbs += food.carbs;
+      _consumedFat += food.fat;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final List<Food> foods = Provider.of<List<Food>>(context);
+    _computeConsumedMacros(foods);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -54,20 +65,24 @@ class _HomeState extends State<Home> {
               children: [
                 PieChart(
                   dataMap: {
-                    'Protein': totalConsumedSample['protein'] ?? 0,
-                    'Carbs': totalConsumedSample['carbs'] ?? 0,
-                    'Fat': totalConsumedSample['fat'] ?? 0,
+                    'Protein': _consumedProtein,
+                    'Carbs': _consumedCarbs,
+                    'Fat': _consumedFat,
                   },
                   // chartType: ChartType.ring,
                   // totalValue: 100,
                   // chartRadius: 100.0,
                   // legendOptions: const LegendOptions(showLegends: false),
                   baseChartColor: Colors.grey[50]!.withOpacity(0.15),
-                  centerText: '${totalConsumedSample['calories'] ?? 0} kcal',
+                  centerText: '${computeTotalCalories(
+                    _consumedProtein,
+                    _consumedCarbs,
+                    _consumedFat,
+                  ).toStringAsFixed(2)} kcal',
                   // centerTextStyle: TextStyle(color: Colors.white),
                   // chartValuesOptions: const ChartValuesOptions(
                   //     showChartValueBackground: false, showChartValues: false),
-                  formatChartValues: (val) => '$val g',
+                  formatChartValues: (val) => '${val.toStringAsFixed(2)} g',
                 ),
                 const Text('You have xxx calories remaining.')
               ],

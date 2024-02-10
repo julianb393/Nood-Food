@@ -9,5 +9,12 @@ class Food {
   double carbs;
   double fat;
   MealType meal;
-  Food(this.name, this.quantity, this.protein, this.carbs, this.fat, this.meal);
+  Food({
+    required this.name,
+    required this.quantity,
+    required this.protein,
+    required this.carbs,
+    required this.fat,
+    required this.meal,
+  });
 }

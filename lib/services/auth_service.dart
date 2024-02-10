@@ -16,7 +16,7 @@ class AuthService {
     return _auth.authStateChanges().map(_parseUserFromFirebaseUser);
   }
 
-  String? getCurrentUserUid() {
+  String? get userUid {
     return _auth.currentUser?.uid;
   }
 

@@ -12,28 +12,34 @@ class DBService {
   final CollectionReference _userCollection =
       FirebaseFirestore.instance.collection('users');
 
-  // Food _parseFoodFromSnapshot(QuerySnapshot snapshot, MealType meal) {
-  //   return;
-  // }
+  Food _parseFoodFromDoc(QueryDocumentSnapshot doc) {
+    return Food(
+      name: doc.get('name'),
+      quantity: doc.get('quantity'),
+      protein: doc.get('protein'),
+      carbs: doc.get('carbs'),
+      fat: doc.get('fat'),
+      meal: MealTypeExtension.parseString(doc.get('meal')),
+    );
+  }
 
-  // Future<List<Food>> getFoodsFromDate(DateTime date, MealType meal) async {
-  //   return _userCollection
-  //       .doc(uid)
-  //       .collection(_df.format(date))
-  //       .snapshots()
-  //       .map((snapshot) => _parseFoodFromSnapshot(snapshot, meal)).toList();
-  // }
-
-  Future<void> writeFood(DateTime date, Food food) async {
-    await _userCollection
+  Stream<List<Food>> getFoodsFromDate(DateTime date) {
+    return _userCollection
         .doc(uid)
         .collection(_df.format(date))
-        .doc(food.name.toUpperCase())
-        .set({
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => _parseFoodFromDoc(doc)).toList());
+  }
+
+  Future<void> writeFood(DateTime date, Food food) async {
+    await _userCollection.doc(uid).collection(_df.format(date)).doc().set({
+      'name': food.name.toUpperCase(),
       'protein': food.protein,
       'carbs': food.carbs,
       'fat': food.fat,
-      'mealToQuantity': {food.meal.name.toString(): food.quantity}
+      'quantity': food.quantity,
+      'meal': food.meal.name
     });
   }
 }
