@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nood_food/common/date_picker.dart';
 import 'package:nood_food/models/food.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/services/db_service.dart';
-import 'package:nood_food/util/macronutrient.dart';
 import 'package:nood_food/views/pages/account.dart';
 import 'package:nood_food/views/pages/home.dart';
 import 'package:nood_food/views/pages/meals/meals.dart';
@@ -18,12 +18,7 @@ class PageNavigator extends StatefulWidget {
 class _PageNavigatorState extends State<PageNavigator> {
   final DBService _dbService = DBService(uid: AuthService().userUid);
   double dailyCaloriesAllowed = 3200.0;
-  Map<String, double> totalConsumedSample = {
-    'protein': 120,
-    'carbs': 300,
-    'fat': 150,
-    'calories': computeTotalCalories(120, 300, 150),
-  };
+  DateTime _selectedDay = DateTime.now();
 
   int _selectedPageIndex = 0;
   final List<String> _pageTitles = ['Nood Food', 'Meals', 'Account'];
@@ -31,7 +26,7 @@ class _PageNavigatorState extends State<PageNavigator> {
   @override
   Widget build(BuildContext context) {
     return StreamProvider<List<Food>>.value(
-      value: _dbService.getFoodsFromDate(DateTime.now()),
+      value: _dbService.getFoodsFromDate(_selectedDay),
       initialData: const [],
       child: Scaffold(
         appBar: AppBar(title: Text(_pageTitles[_selectedPageIndex])),
@@ -62,11 +57,22 @@ class _PageNavigatorState extends State<PageNavigator> {
           selectedItemColor: const Color.fromARGB(255, 170, 231, 220),
           onTap: (index) => setState(() => _selectedPageIndex = index),
         ),
-        body: [
-          const Home(),
+        body: Container(
+            child: [
+          Column(
+            children: [
+              DatePicker(
+                selectedDate: _selectedDay,
+                changeDay: (day) {
+                  setState(() => _selectedDay = day);
+                },
+              ),
+              const Home(),
+            ],
+          ),
           const Meals(),
-          const Account()
-        ][_selectedPageIndex],
+          const Account(),
+        ][_selectedPageIndex]),
       ),
     );
   }
