@@ -11,7 +11,8 @@ import 'package:nood_food/util/style.dart';
 
 class FoodEditor extends StatefulWidget {
   final MealType mealType;
-  const FoodEditor({super.key, required this.mealType});
+  final DateTime day;
+  const FoodEditor({super.key, required this.mealType, required this.day});
 
   @override
   State<FoodEditor> createState() => _FoodEditorState();
@@ -287,7 +288,7 @@ class _FoodEditorState extends State<FoodEditor> {
               fat: _fatConsumed,
               meal: widget.mealType,
             );
-            _dbService.writeFood(DateTime.now(), newFood);
+            _dbService.writeFood(widget.day, newFood);
             Navigator.pop(context);
           },
           child: const Text('Save'),

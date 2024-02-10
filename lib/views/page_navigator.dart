@@ -57,8 +57,7 @@ class _PageNavigatorState extends State<PageNavigator> {
           selectedItemColor: const Color.fromARGB(255, 170, 231, 220),
           onTap: (index) => setState(() => _selectedPageIndex = index),
         ),
-        body: Container(
-            child: [
+        body: [
           Column(
             children: [
               DatePicker(
@@ -67,12 +66,12 @@ class _PageNavigatorState extends State<PageNavigator> {
                   setState(() => _selectedDay = day);
                 },
               ),
-              const Home(),
+              const Expanded(child: Home()),
             ],
           ),
-          const Meals(),
+          Meals(day: _selectedDay),
           const Account(),
-        ][_selectedPageIndex]),
+        ][_selectedPageIndex],
       ),
     );
   }

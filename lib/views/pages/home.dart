@@ -36,6 +36,7 @@ class _HomeState extends State<Home> {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           StyledText.titleLarge('Welcome User!'),
           Column(
@@ -55,7 +56,7 @@ class _HomeState extends State<Home> {
                 ).toStringAsFixed(2)} kcal',
                 formatChartValues: (val) => '${val.toStringAsFixed(2)} g',
               ),
-              const Text('You have xxx calories remaining.')
+              const Text('You have xxx calories remaining.'),
             ],
           )
         ],

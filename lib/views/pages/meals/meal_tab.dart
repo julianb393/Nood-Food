@@ -9,7 +9,13 @@ class MealTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [Icon(meal.getIcon()), Text(meal.name.capitalize())],
+      children: [
+        Icon(meal.getIcon()),
+        Text(
+          meal.name.capitalize(),
+          softWrap: false,
+        )
+      ],
     );
   }
 }

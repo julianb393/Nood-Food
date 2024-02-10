@@ -1,3 +1,4 @@
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:nood_food/models/food.dart';
 import 'package:nood_food/util/macronutrient.dart';
@@ -7,9 +8,14 @@ import 'package:pie_chart/pie_chart.dart';
 
 class MealDetails extends StatelessWidget {
   final MealType mealType;
+  final DateTime day;
   final List<Food> foods;
 
-  const MealDetails({super.key, required this.mealType, required this.foods});
+  const MealDetails(
+      {super.key,
+      required this.mealType,
+      required this.foods,
+      required this.day});
 
   @override
   Widget build(BuildContext context) {
@@ -25,39 +31,51 @@ class MealDetails extends StatelessWidget {
 
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(15, 25, 15, 3),
+        padding: const EdgeInsets.fromLTRB(15, 0, 15, 3),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            DataTable(
-              columns: const [
-                DataColumn(label: Text('Food')),
-                DataColumn(label: Text('Quantity(g)')),
-                DataColumn(label: Text('Calories(kcal)'))
-              ],
-              rows: foods
-                  .map((food) => DataRow(cells: [
-                        DataCell(Text(food.name)),
-                        DataCell(Text(food.quantity.toString())),
-                        DataCell(Text(computeTotalCaloriesFromFood(food)
-                            .toStringAsFixed(2))),
-                      ]))
-                  .toList(),
+            Expanded(
+              flex: 2,
+              child: DataTable2(
+                columnSpacing: 40,
+                showBottomBorder: true,
+                isVerticalScrollBarVisible: true,
+                columns: const [
+                  DataColumn2(label: Text('Food')),
+                  DataColumn2(label: Text('Quantity')),
+                  DataColumn2(label: Text('Calories'))
+                ],
+                rows: foods
+                    .map((food) => DataRow2(
+                          cells: [
+                            DataCell(Text(food.name, softWrap: true)),
+                            DataCell(Text('${food.quantity.toString()} g')),
+                            DataCell(Text(computeTotalCaloriesFromFood(food)
+                                .toStringAsFixed(2))),
+                          ],
+                        ))
+                    .toList(),
+              ),
             ),
-            PieChart(
-              chartRadius: 170,
-              dataMap: {
-                'protein': totalProtein,
-                'carbs': totalCarbs,
-                'fat': totalFat
-              },
-              formatChartValues: (double val) => '${val.toStringAsFixed(2)} g',
-              centerText: '${computeTotalCalories(
-                totalProtein,
-                totalCarbs,
-                totalFat,
-              ).toStringAsFixed(2)} kcal',
+            Expanded(
+              flex: 1,
+              child: PieChart(
+                chartRadius: 170,
+                dataMap: {
+                  'protein': totalProtein,
+                  'carbs': totalCarbs,
+                  'fat': totalFat
+                },
+                formatChartValues: (double val) =>
+                    '${val.toStringAsFixed(2)} g',
+                centerText: '${computeTotalCalories(
+                  totalProtein,
+                  totalCarbs,
+                  totalFat,
+                ).toStringAsFixed(2)} kcal',
+              ),
             ),
           ],
         ),
@@ -68,7 +86,7 @@ class MealDetails extends StatelessWidget {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return FoodEditor(mealType: mealType);
+              return FoodEditor(mealType: mealType, day: day);
             },
           );
         },
