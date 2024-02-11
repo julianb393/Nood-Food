@@ -40,9 +40,9 @@ class MealDetails extends StatelessWidget {
     double totalFat = 0.0;
 
     foods.forEach((food) {
-      totalProtein += food.protein;
-      totalCarbs += food.carbs;
-      totalFat += food.fat;
+      totalProtein += food.computeConsumedProtein();
+      totalCarbs += food.computeConsumedCarbs();
+      totalFat += food.computeConsumedFat();
     });
 
     return Scaffold(
@@ -68,7 +68,8 @@ class MealDetails extends StatelessWidget {
                           onTap: () => _navigateToFoodEditor(context, food),
                           cells: [
                             DataCell(Text(food.name, softWrap: true)),
-                            DataCell(Text('${food.quantity.toString()} g')),
+                            DataCell(Text(
+                                '${food.consumedAmount.toString()} ${food.consumedUom}')),
                             DataCell(Text(computeTotalCaloriesFromFood(food)
                                 .toStringAsFixed(2))),
                           ],

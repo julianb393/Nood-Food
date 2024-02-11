@@ -22,9 +22,9 @@ class _HomeState extends State<Home> {
     _consumedCarbs = 0.0;
     _consumedFat = 0.0;
     for (Food food in foods) {
-      _consumedProtein += food.protein;
-      _consumedCarbs += food.carbs;
-      _consumedFat += food.fat;
+      _consumedProtein += food.computeConsumedProtein();
+      _consumedCarbs += food.computeConsumedCarbs();
+      _consumedFat += food.computeConsumedFat();
     }
   }
 

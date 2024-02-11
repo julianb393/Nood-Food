@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nood_food/common/form_decoration.dart';
 import 'package:nood_food/models/food.dart';
+import 'package:nood_food/models/nutritional_facts.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/services/db_service.dart';
 import 'package:nood_food/util/barcode_scan.dart';
@@ -294,12 +295,17 @@ class _FoodEditorState extends State<FoodEditor> {
                 print('The form is invalid.');
                 return;
               }
+              NutritionalFacts nutrition = NutritionalFacts(
+                amount: _amount,
+                protein: _protein,
+                carbs: _carbs,
+                fat: _fat,
+              );
               Food newFood = Food(
                 name: _name,
-                quantity: _consumed,
-                protein: _proteinConsumed,
-                carbs: _carbsConsumed,
-                fat: _fatConsumed,
+                consumedAmount: _consumed,
+                consumedUom: 'g',
+                nutrition: nutrition,
                 meal: widget.mealType,
               );
               _dbService.writeFood(widget.day, newFood);

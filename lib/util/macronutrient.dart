@@ -5,5 +5,7 @@ double computeTotalCalories(double protein, double carbs, double fat) {
 }
 
 double computeTotalCaloriesFromFood(Food food) {
-  return food.protein * 4 + food.carbs * 4 + food.fat * 9;
+  return food.computeConsumedProtein() * 4 +
+      food.computeConsumedCarbs() * 4 +
+      food.computeConsumedFat() * 9;
 }
