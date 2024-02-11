@@ -343,18 +343,22 @@ class _FoodEditorState extends State<FoodEditor> {
         padding: EdgeInsets.zero,
         width: double.infinity,
         child: FloatingActionButton(
-          onPressed: () {
-            if (!_formKey.currentState!.validate()) {
-              print('The form is invalid.');
-              return;
-            }
-            setState(() => _isLoading = true);
-            _isNewEntry
-                ? _dbService.writeFood(widget.day, _newFood)
-                : _dbService.updateFood(widget.day, _newFood);
-            setState(() => _isLoading = false);
-            Navigator.pop(context);
-          },
+          onPressed: _isLoading
+              ? null
+              : () async {
+                  if (!_formKey.currentState!.validate()) {
+                    print('The form is invalid.');
+                    return;
+                  }
+                  setState(() => _isLoading = true);
+                  Future.delayed(Duration(seconds: 30));
+                  _isNewEntry
+                      ? await _dbService.writeFood(widget.day, _newFood)
+                      : await _dbService.updateFood(widget.day, _newFood);
+                  setState(() => _isLoading = false);
+                  if (!mounted) return;
+                  Navigator.pop(context);
+                },
           child: Text(_isNewEntry ? 'Save' : 'Save Changes'),
         ),
       ),
