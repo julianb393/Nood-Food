@@ -1,4 +1,3 @@
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:nood_food/models/food.dart';
 import 'package:nood_food/util/macronutrient.dart';

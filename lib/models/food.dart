@@ -17,16 +17,25 @@ class Food {
   });
 
   double computeConsumedProtein() {
+    if (nutrition.amount == 0) {
+      return 0.0;
+    }
     return double.parse((nutrition.protein / nutrition.amount * consumedAmount)
         .toStringAsFixed(2));
   }
 
   double computeConsumedCarbs() {
+    if (nutrition.amount == 0) {
+      return 0.0;
+    }
     return double.parse((nutrition.carbs / nutrition.amount * consumedAmount)
         .toStringAsFixed(2));
   }
 
   double computeConsumedFat() {
+    if (nutrition.amount == 0) {
+      return 0.0;
+    }
     return double.parse(
         (nutrition.fat / nutrition.amount * consumedAmount).toStringAsFixed(2));
   }

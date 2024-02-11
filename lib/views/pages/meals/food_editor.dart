@@ -35,16 +35,28 @@ class _FoodEditorState extends State<FoodEditor> {
   final _carbsController = TextEditingController();
   final _fatController = TextEditingController();
 
-  String _name = '';
+  late Food _newFood;
+  late NutritionalFacts _nutrition;
 
-  // Nutritional facts fields
-  double _amount = 0.0;
-  double _protein = 0.0;
-  double _carbs = 0.0;
-  double _fat = 0.0;
+  @override
+  void initState() {
+    super.initState();
 
-  // Consumption amount
-  double _consumed = 0.0;
+    // Nutritional facts fields
+    _nutrition = NutritionalFacts(
+      amount: 0.0,
+      protein: 0.0,
+      carbs: 0.0,
+      fat: 0.0,
+    );
+
+    _newFood = Food(
+        name: '',
+        consumedAmount: 0.0,
+        consumedUom: 'g',
+        nutrition: _nutrition,
+        meal: widget.mealType);
+  }
 
   // Consumed summary fields
   double _proteinConsumed = 0.0;
@@ -53,17 +65,9 @@ class _FoodEditorState extends State<FoodEditor> {
   double _caloriesConsumed = 0.0;
 
   void _updateSummary() {
-    _proteinConsumed = _protein == 0
-        ? 0.0
-        : double.parse((_protein / _amount * _consumed).toStringAsFixed(2));
-
-    _carbsConsumed = _carbs == 0
-        ? 0.0
-        : double.parse((_carbs / _amount * _consumed).toStringAsFixed(2));
-
-    _fatConsumed = _fat == 0
-        ? 0.0
-        : double.parse((_fat / _amount * _consumed).toStringAsFixed(2));
+    _proteinConsumed = _newFood.computeConsumedProtein();
+    _carbsConsumed = _newFood.computeConsumedCarbs();
+    _fatConsumed = _newFood.computeConsumedFat();
 
     _caloriesConsumed =
         computeTotalCalories(_proteinConsumed, _carbsConsumed, _fatConsumed);
@@ -89,7 +93,7 @@ class _FoodEditorState extends State<FoodEditor> {
                           ? null
                           : 'Please enter a name.';
                     },
-                    onChanged: (val) => setState(() => _name = val),
+                    onChanged: (val) => setState(() => _newFood.name = val),
                     decoration: formDecoration.copyWith(labelText: 'Name'),
                   ),
                   const Row(
@@ -118,7 +122,8 @@ class _FoodEditorState extends State<FoodEditor> {
                                 : 'Please enter an amount.';
                           },
                           onChanged: (val) => setState(() {
-                            _amount = val.isEmpty ? 0.0 : double.parse(val);
+                            _nutrition.amount =
+                                val.isEmpty ? 0.0 : double.parse(val);
                             _updateSummary();
                           }),
                           keyboardType: TextInputType.number,
@@ -143,7 +148,8 @@ class _FoodEditorState extends State<FoodEditor> {
                                 : 'Invalid number.';
                           },
                           onChanged: (val) => setState(() {
-                            _protein = val.isEmpty ? 0.0 : double.parse(val);
+                            _nutrition.protein =
+                                val.isEmpty ? 0.0 : double.parse(val);
                             _updateSummary();
                           }),
                           keyboardType: TextInputType.number,
@@ -164,7 +170,8 @@ class _FoodEditorState extends State<FoodEditor> {
                                 : 'Invalid number.';
                           },
                           onChanged: (val) => setState(() {
-                            _carbs = val.isEmpty ? 0.0 : double.parse(val);
+                            _nutrition.carbs =
+                                val.isEmpty ? 0.0 : double.parse(val);
                             _updateSummary();
                           }),
                           keyboardType: TextInputType.number,
@@ -184,7 +191,8 @@ class _FoodEditorState extends State<FoodEditor> {
                                 : 'Invalid number.';
                           },
                           onChanged: (val) => setState(() {
-                            _fat = val.isEmpty ? 0.0 : double.parse(val);
+                            _nutrition.fat =
+                                val.isEmpty ? 0.0 : double.parse(val);
                             _updateSummary();
                           }),
                           keyboardType: TextInputType.number,
@@ -214,15 +222,17 @@ class _FoodEditorState extends State<FoodEditor> {
                       }
                       setState(() {
                         _nameController.text = scannedData['name'];
-                        _name = _nameController.text;
+                        _newFood.name = _nameController.text;
                         _amountController.text = scannedData['amount'];
-                        _amount = double.parse(_amountController.text);
+                        _newFood.consumedAmount =
+                            double.parse(_amountController.text);
                         _proteinController.text = scannedData['protein'];
-                        _protein = double.parse(_proteinController.text);
+                        _nutrition.protein =
+                            double.parse(_proteinController.text);
                         _carbsController.text = scannedData['carbs'];
-                        _carbs = double.parse(_carbsController.text);
+                        _nutrition.carbs = double.parse(_carbsController.text);
                         _fatController.text = scannedData['fat'];
-                        _fat = double.parse(_fatController.text);
+                        _nutrition.fat = double.parse(_fatController.text);
                         _updateSummary();
                       });
                     },
@@ -254,7 +264,8 @@ class _FoodEditorState extends State<FoodEditor> {
                                 : 'Invalid numbers.';
                           },
                           onChanged: (val) => setState(() {
-                            _consumed = val.isEmpty ? 0.0 : double.parse(val);
+                            _newFood.consumedAmount =
+                                val.isEmpty ? 0.0 : double.parse(val);
                             _updateSummary();
                           }),
                           keyboardType: TextInputType.number,
@@ -270,7 +281,7 @@ class _FoodEditorState extends State<FoodEditor> {
                               .map((uom) => DropdownMenuItem(
                                   value: uom, child: Text(uom)))
                               .toList(),
-                          onChanged: (item) {},
+                          onChanged: (uom) => _newFood.consumedUom = uom ?? 'g',
                         ),
                       )
                     ],
@@ -295,20 +306,7 @@ class _FoodEditorState extends State<FoodEditor> {
                 print('The form is invalid.');
                 return;
               }
-              NutritionalFacts nutrition = NutritionalFacts(
-                amount: _amount,
-                protein: _protein,
-                carbs: _carbs,
-                fat: _fat,
-              );
-              Food newFood = Food(
-                name: _name,
-                consumedAmount: _consumed,
-                consumedUom: 'g',
-                nutrition: nutrition,
-                meal: widget.mealType,
-              );
-              _dbService.writeFood(widget.day, newFood);
+              _dbService.writeFood(widget.day, _newFood);
               Navigator.pop(context);
             },
             child: const Text('Save'),
