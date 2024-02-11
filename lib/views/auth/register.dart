@@ -17,15 +17,18 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   final _authService = AuthService();
+  final RegExp specialCharsRegex =
+      RegExp(r'[~`!@#\$%^&*()-_+=|}\]{\[":;?/>.<,]');
+  final RegExp numsRegex = RegExp(r'[0-9]');
   bool _isLoading = false;
   bool _hidePassword = true;
   String inputEmail = '';
   String inputPassword = '';
 
-  bool _validatePassowrd(String password) {
+  bool _validatePassword(String password) {
     return password.length >= 6 &&
-        password.contains('[0-9]') &&
-        password.contains('[~`!@#\$%^&*()-_+=|}]{["\':;?/>.<,]');
+        password.contains(numsRegex) &&
+        password.contains(specialCharsRegex);
   }
 
   @override
@@ -63,7 +66,7 @@ class _RegisterState extends State<Register> {
                 const SizedBox(height: 5),
                 TextFormField(
                   validator: (password) {
-                    return password != null && _validatePassowrd(password)
+                    return password != null && _validatePassword(password)
                         ? null
                         : 'Please enter a password with the following:\n6 characters, 1 number, and 1 special character';
                   },
@@ -78,7 +81,7 @@ class _RegisterState extends State<Register> {
                           : const Icon(Icons.remove_red_eye_outlined),
                     ),
                   ),
-                  obscureText: true,
+                  obscureText: _hidePassword,
                   onChanged: (val) => setState(() => inputPassword = val),
                 ),
                 const SizedBox(height: 5),
