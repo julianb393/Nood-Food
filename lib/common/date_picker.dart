@@ -21,6 +21,7 @@ class DatePicker extends StatelessWidget {
           weekdayTextColor: const Color(0xFF8A8A8A),
           digitsColor: Colors.white,
           selectedDigitBackgroundColor: const Color.fromARGB(255, 42, 100, 72),
+          selectedDigitBorderColor: const Color.fromARGB(255, 24, 56, 41),
         )
       ],
     );
