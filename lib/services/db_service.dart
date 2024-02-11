@@ -24,6 +24,7 @@ class DBService {
 
   Food _parseFoodFromDoc(QueryDocumentSnapshot doc) {
     return Food(
+      uid: doc.id,
       name: doc.get('name'),
       consumedAmount: doc.get('consumed_amount'),
       consumedUom: doc.get('consumed_uom'),
@@ -52,12 +53,24 @@ class DBService {
   }
 
   Future<void> updateFood(DateTime date, Food food) async {
-    // TODO
-    return;
+    await _userCollection
+        .doc(uid)
+        .collection(_df.format(date))
+        .doc(food.uid)
+        .update({
+      'name': food.name.toUpperCase(),
+      'consumed_amount': food.consumedAmount,
+      'consumed_uom': food.consumedUom,
+      'nutritional_facts': food.nutrition.toJson(),
+      'meal': food.meal.name
+    });
   }
 
   Future<void> deleteFood(DateTime date, Food food) async {
-    // TODO
-    return;
+    await _userCollection
+        .doc(uid)
+        .collection(_df.format(date))
+        .doc(food.uid)
+        .delete();
   }
 }

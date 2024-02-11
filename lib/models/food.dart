@@ -3,12 +3,15 @@ import 'package:nood_food/util/meal_type.dart';
 
 /// Class that models a Food whose [quantity] is measured in [quantityUom].
 class Food {
+  // Only set when retrieved from db.
+  String? uid;
   String name;
   double consumedAmount;
   String consumedUom;
   NutritionalFacts nutrition;
   MealType meal;
   Food({
+    this.uid,
     required this.name,
     required this.consumedAmount,
     required this.consumedUom,
