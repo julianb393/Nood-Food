@@ -83,11 +83,10 @@ class MealDetails extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return FoodEditor(mealType: mealType, day: day);
-            },
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => FoodEditor(mealType: mealType, day: day)),
           );
         },
       ),

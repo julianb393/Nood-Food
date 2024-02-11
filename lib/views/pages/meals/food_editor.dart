@@ -65,235 +65,243 @@ class _FoodEditorState extends State<FoodEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      insetPadding: EdgeInsets.all(5),
-      title: StyledText.titleLarge('Food Editor'),
-      content: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: _nameController,
-                validator: (value) {
-                  return value != null && value.isNotEmpty
-                      ? null
-                      : 'Please enter a name.';
-                },
-                onChanged: (val) => setState(() => _name = val),
-                decoration: formDecoration.copyWith(labelText: 'Name'),
-              ),
-              const Row(
+    return Scaffold(
+        appBar: AppBar(title: const Text('Food Editor')),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                // mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(child: Divider()),
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text('Serving Nutritional Facts'),
+                  TextFormField(
+                    controller: _nameController,
+                    validator: (value) {
+                      return value != null && value.isNotEmpty
+                          ? null
+                          : 'Please enter a name.';
+                    },
+                    onChanged: (val) => setState(() => _name = val),
+                    decoration: formDecoration.copyWith(labelText: 'Name'),
                   ),
-                  Expanded(child: Divider()),
-                ],
-              ),
-              const SizedBox(height: 5),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _amountController,
-                      validator: (value) {
-                        return value != null &&
-                                value.isNotEmpty &&
-                                value.isNumeric()
-                            ? null
-                            : 'Please enter an amount.';
-                      },
-                      onChanged: (val) => setState(() {
-                        _amount = val.isEmpty ? 0.0 : double.parse(val);
-                        _updateSummary();
-                      }),
-                      keyboardType: TextInputType.number,
-                      decoration:
-                          formDecoration.copyWith(labelText: 'Amount (g)'),
-                    ),
+                  const Row(
+                    children: [
+                      Expanded(child: Divider()),
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text('Serving Nutritional Facts'),
+                      ),
+                      Expanded(child: Divider()),
+                    ],
                   ),
-                  const SizedBox(width: 5),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _proteinController,
-                      validator: (value) {
-                        return value != null &&
-                                value.isNotEmpty &&
-                                value.isNumeric()
-                            ? null
-                            : 'Invalid number.';
-                      },
-                      onChanged: (val) => setState(() {
-                        _protein = val.isEmpty ? 0.0 : double.parse(val);
-                        _updateSummary();
-                      }),
-                      keyboardType: TextInputType.number,
-                      decoration:
-                          formDecoration.copyWith(labelText: 'Protein (g)'),
-                    ),
-                  ),
-                  const SizedBox(width: 5),
-                  Expanded(
-                    flex: 1,
-                    child: TextFormField(
-                      controller: _carbsController,
-                      validator: (value) {
-                        return value != null &&
-                                value.isNotEmpty &&
-                                value.isNumeric()
-                            ? null
-                            : 'Invalid number.';
-                      },
-                      onChanged: (val) => setState(() {
-                        _carbs = val.isEmpty ? 0.0 : double.parse(val);
-                        _updateSummary();
-                      }),
-                      keyboardType: TextInputType.number,
-                      decoration:
-                          formDecoration.copyWith(labelText: 'Carbs (g)'),
-                    ),
-                  ),
-                  const SizedBox(width: 5),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _fatController,
-                      validator: (value) {
-                        return value != null &&
-                                value.isNotEmpty &&
-                                value.isNumeric()
-                            ? null
-                            : 'Invalid number.';
-                      },
-                      onChanged: (val) => setState(() {
-                        _fat = val.isEmpty ? 0.0 : double.parse(val);
-                        _updateSummary();
-                      }),
-                      keyboardType: TextInputType.number,
-                      decoration: formDecoration.copyWith(labelText: 'Fat (g)'),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 5),
-              ElevatedButton(
-                onPressed: () async {
-                  Map<String, dynamic>? scannedData = await scanBarcode();
-                  if (scannedData == null || scannedData.isEmpty) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          backgroundColor: Colors.redAccent,
-                          content: Text('Unable to recognize that barcode.'),
+                  const SizedBox(height: 5),
+                  Row(
+                    children: [
+                      const Expanded(flex: 1, child: SizedBox()),
+                      Expanded(
+                        flex: 2,
+                        child: TextFormField(
+                          controller: _amountController,
+                          validator: (value) {
+                            return value != null &&
+                                    value.isNotEmpty &&
+                                    value.isNumeric()
+                                ? null
+                                : 'Please enter an amount.';
+                          },
+                          onChanged: (val) => setState(() {
+                            _amount = val.isEmpty ? 0.0 : double.parse(val);
+                            _updateSummary();
+                          }),
+                          keyboardType: TextInputType.number,
+                          decoration:
+                              formDecoration.copyWith(labelText: 'Amount (g)'),
                         ),
-                      );
-                    } else {
-                      print('Unable to recognize that barcode.');
-                    }
-                    return;
-                  }
-                  setState(() {
-                    _nameController.text = scannedData['name'];
-                    _name = _nameController.text;
-                    _amountController.text = scannedData['amount'];
-                    _amount = double.parse(_amountController.text);
-                    _proteinController.text = scannedData['protein'];
-                    _protein = double.parse(_proteinController.text);
-                    _carbsController.text = scannedData['carbs'];
-                    _carbs = double.parse(_carbsController.text);
-                    _fatController.text = scannedData['fat'];
-                    _fat = double.parse(_fatController.text);
-                    _updateSummary();
-                  });
-                },
-                child: const Text('Scan barcode to fill'),
-              ),
-              const Row(
-                children: [
-                  Expanded(child: Divider()),
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text('Consumption Summary'),
+                      ),
+                      const Expanded(flex: 1, child: SizedBox())
+                    ],
                   ),
-                  Expanded(child: Divider()),
-                ],
-              ),
-              // const SizedBox(height: 5),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Flexible(
-                    flex: 2,
-                    child: TextFormField(
-                      validator: (value) {
-                        return value != null &&
-                                value.isNotEmpty &&
-                                value.isNumeric()
-                            ? null
-                            : 'Invalid numbers.';
-                      },
-                      onChanged: (val) => setState(() {
-                        _consumed = val.isEmpty ? 0.0 : double.parse(val);
+                  const SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _proteinController,
+                          validator: (value) {
+                            return value != null &&
+                                    value.isNotEmpty &&
+                                    value.isNumeric()
+                                ? null
+                                : 'Invalid number.';
+                          },
+                          onChanged: (val) => setState(() {
+                            _protein = val.isEmpty ? 0.0 : double.parse(val);
+                            _updateSummary();
+                          }),
+                          keyboardType: TextInputType.number,
+                          decoration:
+                              formDecoration.copyWith(labelText: 'Protein (g)'),
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      Expanded(
+                        flex: 1,
+                        child: TextFormField(
+                          controller: _carbsController,
+                          validator: (value) {
+                            return value != null &&
+                                    value.isNotEmpty &&
+                                    value.isNumeric()
+                                ? null
+                                : 'Invalid number.';
+                          },
+                          onChanged: (val) => setState(() {
+                            _carbs = val.isEmpty ? 0.0 : double.parse(val);
+                            _updateSummary();
+                          }),
+                          keyboardType: TextInputType.number,
+                          decoration:
+                              formDecoration.copyWith(labelText: 'Carbs (g)'),
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _fatController,
+                          validator: (value) {
+                            return value != null &&
+                                    value.isNotEmpty &&
+                                    value.isNumeric()
+                                ? null
+                                : 'Invalid number.';
+                          },
+                          onChanged: (val) => setState(() {
+                            _fat = val.isEmpty ? 0.0 : double.parse(val);
+                            _updateSummary();
+                          }),
+                          keyboardType: TextInputType.number,
+                          decoration:
+                              formDecoration.copyWith(labelText: 'Fat (g)'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  ElevatedButton(
+                    onPressed: () async {
+                      Map<String, dynamic>? scannedData = await scanBarcode();
+                      if (scannedData == null || scannedData.isEmpty) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              backgroundColor: Colors.redAccent,
+                              content:
+                                  Text('Unable to recognize that barcode.'),
+                            ),
+                          );
+                        } else {
+                          print('Unable to recognize that barcode.');
+                        }
+                        return;
+                      }
+                      setState(() {
+                        _nameController.text = scannedData['name'];
+                        _name = _nameController.text;
+                        _amountController.text = scannedData['amount'];
+                        _amount = double.parse(_amountController.text);
+                        _proteinController.text = scannedData['protein'];
+                        _protein = double.parse(_proteinController.text);
+                        _carbsController.text = scannedData['carbs'];
+                        _carbs = double.parse(_carbsController.text);
+                        _fatController.text = scannedData['fat'];
+                        _fat = double.parse(_fatController.text);
                         _updateSummary();
-                      }),
-                      keyboardType: TextInputType.number,
-                      decoration:
-                          formDecoration.copyWith(labelText: 'Consumed'),
-                    ),
+                      });
+                    },
+                    child: const Text('Scan barcode to fill'),
                   ),
-                  Flexible(
-                    child: DropdownButtonFormField(
-                      decoration: formDecoration,
-                      value: 'g',
-                      items: ['g']
-                          .map((uom) =>
-                              DropdownMenuItem(value: uom, child: Text(uom)))
-                          .toList(),
-                      onChanged: (item) {},
-                    ),
-                  )
+                  const Row(
+                    children: [
+                      Expanded(child: Divider()),
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text('Consumption Summary'),
+                      ),
+                      Expanded(child: Divider()),
+                    ],
+                  ),
+                  // const SizedBox(height: 5),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        flex: 2,
+                        child: TextFormField(
+                          validator: (value) {
+                            return value != null &&
+                                    value.isNotEmpty &&
+                                    value.isNumeric()
+                                ? null
+                                : 'Invalid numbers.';
+                          },
+                          onChanged: (val) => setState(() {
+                            _consumed = val.isEmpty ? 0.0 : double.parse(val);
+                            _updateSummary();
+                          }),
+                          keyboardType: TextInputType.number,
+                          decoration:
+                              formDecoration.copyWith(labelText: 'Consumed'),
+                        ),
+                      ),
+                      Flexible(
+                        child: DropdownButtonFormField(
+                          decoration: formDecoration,
+                          value: 'g',
+                          items: ['g']
+                              .map((uom) => DropdownMenuItem(
+                                  value: uom, child: Text(uom)))
+                              .toList(),
+                          onChanged: (item) {},
+                        ),
+                      )
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                        'Protein: $_proteinConsumed g\nCarbs: $_carbsConsumed g\nFat: $_fatConsumed g\nCalories: $_caloriesConsumed kcal'),
+                  ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                    'Protein: $_proteinConsumed g\nCarbs: $_carbsConsumed g\nFat: $_fatConsumed g\nCalories: $_caloriesConsumed kcal'),
-              ),
-            ],
+            ),
           ),
         ),
-      ),
-      actionsAlignment: MainAxisAlignment.spaceEvenly,
-      actions: [
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            if (!_formKey.currentState!.validate()) {
-              print('The form is invalid.');
-              return;
-            }
-            Food newFood = Food(
-              name: _name,
-              quantity: _consumed,
-              protein: _proteinConsumed,
-              carbs: _carbsConsumed,
-              fat: _fatConsumed,
-              meal: widget.mealType,
-            );
-            _dbService.writeFood(widget.day, newFood);
-            Navigator.pop(context);
-          },
-          child: const Text('Save'),
-        ),
-      ],
-    );
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: Container(
+          padding: EdgeInsets.zero,
+          width: double.infinity,
+          child: FloatingActionButton(
+            onPressed: () {
+              if (!_formKey.currentState!.validate()) {
+                print('The form is invalid.');
+                return;
+              }
+              Food newFood = Food(
+                name: _name,
+                quantity: _consumed,
+                protein: _proteinConsumed,
+                carbs: _carbsConsumed,
+                fat: _fatConsumed,
+                meal: widget.mealType,
+              );
+              _dbService.writeFood(widget.day, newFood);
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ));
   }
 }
