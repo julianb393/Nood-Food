@@ -50,4 +50,14 @@ class DBService {
       'meal': food.meal.name
     });
   }
+
+  Future<void> updateFood(DateTime date, Food food) async {
+    // TODO
+    return;
+  }
+
+  Future<void> deleteFood(DateTime date, Food food) async {
+    // TODO
+    return;
+  }
 }
