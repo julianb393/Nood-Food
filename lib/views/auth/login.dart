@@ -2,6 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:nood_food/common/loader.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/common/form_decoration.dart';
 
@@ -16,6 +17,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   final _authService = AuthService();
+  bool _isLoading = false;
   bool _hidePassword = true;
   String inputEmail = '';
   String inputPassword = '';
@@ -73,41 +75,51 @@ class _LoginState extends State<Login> {
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(45),
                   ),
-                  onPressed: () async {
-                    if (!_formKey.currentState!.validate()) {
-                      print('Form is invalid');
-                      return;
-                    }
+                  onPressed: _isLoading
+                      ? null
+                      : () async {
+                          if (!_formKey.currentState!.validate()) {
+                            print('Form is invalid');
+                            return;
+                          }
 
-                    // Would show whether login unsuccessful, otherwise
-                    // navigate to home page
-                    String errMsg;
-                    try {
-                      await _authService.loginWithEmail(
-                          inputEmail, inputPassword);
-                      return;
-                    } on FirebaseAuthException catch (error) {
-                      // credentiala issue
-                      errMsg = 'Invalid email or password.';
-                      print(error);
-                    } catch (error) {
-                      // server issue
-                      errMsg = 'We\'re having issues connecting to' +
-                          ' our server. Please try again later...';
-                      print(error);
-                    }
+                          setState(() {
+                            _isLoading = true;
+                          });
 
-                    // This check is needed for async functions for snackbars.
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.redAccent,
-                          content: Text(errMsg),
-                        ),
-                      );
-                    }
-                  },
-                  child: const Text('Login'),
+                          // Would show whether login unsuccessful, otherwise
+                          // navigate to home page
+                          String errMsg;
+                          try {
+                            await _authService.loginWithEmail(
+                                inputEmail, inputPassword);
+                            return;
+                          } on FirebaseAuthException catch (error) {
+                            // credentiala issue
+                            errMsg = 'Invalid email or password.';
+                            print(error);
+                          } catch (error) {
+                            // server issue
+                            errMsg = 'We\'re having issues connecting to' +
+                                ' our server. Please try again later...';
+                            print(error);
+                          }
+
+                          setState(() {
+                            _isLoading = false;
+                          });
+
+                          // This check is needed for async functions for snackbars.
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.redAccent,
+                                content: Text(errMsg),
+                              ),
+                            );
+                          }
+                        },
+                  child: _isLoading ? const Loader() : const Text('Login'),
                 ),
               ],
             ),

@@ -7,12 +7,17 @@ import 'package:nood_food/util/barcode_scan.dart';
 import 'package:nood_food/util/macronutrient.dart';
 import 'package:nood_food/util/meal_type.dart';
 import 'package:nood_food/util/string_extension.dart';
-import 'package:nood_food/util/style.dart';
 
 class FoodEditor extends StatefulWidget {
   final MealType mealType;
   final DateTime day;
-  const FoodEditor({super.key, required this.mealType, required this.day});
+  final Food? food;
+  const FoodEditor({
+    super.key,
+    required this.mealType,
+    required this.day,
+    this.food,
+  });
 
   @override
   State<FoodEditor> createState() => _FoodEditorState();

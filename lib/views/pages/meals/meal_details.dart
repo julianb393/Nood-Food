@@ -17,6 +17,22 @@ class MealDetails extends StatelessWidget {
       required this.foods,
       required this.day});
 
+  /// Navigates to the Food Editor page. If [foodtoView] was provided, then we
+  /// initialize the state has being in vieweing which will allow uses to edit
+  /// the record if they wish to. Otherwise, the Food Editor will be open with
+  /// no fields filled, assuming the user wants to create a new Food record.
+  void _navigateToFoodEditor(BuildContext context, Food? foodToView) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => FoodEditor(
+                mealType: mealType,
+                day: day,
+                food: foodToView,
+              )),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double totalProtein = 0.0;
@@ -49,6 +65,7 @@ class MealDetails extends StatelessWidget {
                 ],
                 rows: foods
                     .map((food) => DataRow2(
+                          onTap: () => _navigateToFoodEditor(context, food),
                           cells: [
                             DataCell(Text(food.name, softWrap: true)),
                             DataCell(Text('${food.quantity.toString()} g')),
@@ -81,15 +98,8 @@ class MealDetails extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => FoodEditor(mealType: mealType, day: day)),
-          );
-        },
-      ),
+          child: const Icon(Icons.add),
+          onPressed: () => _navigateToFoodEditor(context, null)),
     );
   }
 }

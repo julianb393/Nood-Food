@@ -2,6 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:nood_food/common/loader.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/common/form_decoration.dart';
 
@@ -16,6 +17,7 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   final _authService = AuthService();
+  bool _isLoading = false;
   bool _hidePassword = true;
   String inputEmail = '';
   String inputPassword = '';
@@ -84,40 +86,51 @@ class _RegisterState extends State<Register> {
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(45),
                   ),
-                  onPressed: () async {
-                    if (!_formKey.currentState!.validate()) {
-                      print('Form is invalid');
-                      return;
-                    }
-                    // Would show whether login unsuccessful, otherwise
-                    // navigate to home page
-                    String errMsg;
-                    try {
-                      await _authService.registerWithEmail(
-                          inputEmail, inputPassword);
-                      return;
-                    } on FirebaseAuthException catch (error) {
-                      // credentiala issue
-                      errMsg = 'This email has already been registed.';
-                      print(error);
-                    } catch (error) {
-                      // server issue
-                      errMsg = 'We\'re having issues connecting to' +
-                          ' our server. Please try again later...';
-                      print(error);
-                    }
+                  onPressed: _isLoading
+                      ? null
+                      : () async {
+                          if (!_formKey.currentState!.validate()) {
+                            print('Form is invalid');
+                            return;
+                          }
 
-                    // This check is needed for async functions for snackbars.
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.redAccent,
-                          content: Text(errMsg),
-                        ),
-                      );
-                    }
-                  },
-                  child: const Text('Register'),
+                          setState(() {
+                            _isLoading = true;
+                          });
+
+                          // Would show whether login unsuccessful, otherwise
+                          // navigate to home page
+                          String errMsg;
+                          try {
+                            await _authService.registerWithEmail(
+                                inputEmail, inputPassword);
+                            return;
+                          } on FirebaseAuthException catch (error) {
+                            // credentiala issue
+                            errMsg = 'This email has already been registed.';
+                            print(error);
+                          } catch (error) {
+                            // server issue
+                            errMsg = 'We\'re having issues connecting to' +
+                                ' our server. Please try again later...';
+                            print(error);
+                          }
+
+                          setState(() {
+                            _isLoading = false;
+                          });
+
+                          // This check is needed for async functions for snackbars.
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.redAccent,
+                                content: Text(errMsg),
+                              ),
+                            );
+                          }
+                        },
+                  child: _isLoading ? const Loader() : const Text('Register'),
                 ),
               ],
             ),
