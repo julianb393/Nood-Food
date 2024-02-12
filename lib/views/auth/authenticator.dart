@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/views/auth/login_register_selector.dart';
 import 'package:provider/provider.dart';

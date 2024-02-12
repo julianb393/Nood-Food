@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nood_food/models/food.dart';
 import 'package:nood_food/util/macronutrient.dart';
-import 'package:nood_food/util/style.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:provider/provider.dart';
 
@@ -38,7 +37,6 @@ class _HomeState extends State<Home> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          StyledText.titleLarge('Welcome User!'),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

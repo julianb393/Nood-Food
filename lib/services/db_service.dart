@@ -73,4 +73,13 @@ class DBService {
         .doc(food.uid)
         .delete();
   }
+
+  Future<void> updateUserDetails(
+      DateTime? dob, double? weight, double? height) async {
+    await _userCollection.doc(uid).set({
+      if (dob != null) 'dob': _df.format(dob),
+      if (weight != null) 'weight': weight,
+      if (height != null) 'height': height,
+    }, SetOptions(merge: true));
+  }
 }

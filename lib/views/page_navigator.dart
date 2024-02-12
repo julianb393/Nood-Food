@@ -3,7 +3,8 @@ import 'package:nood_food/common/date_picker.dart';
 import 'package:nood_food/models/food.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/services/db_service.dart';
-import 'package:nood_food/views/pages/account.dart';
+import 'package:nood_food/views/pages/account/account.dart';
+import 'package:nood_food/views/pages/account/account_info.dart';
 import 'package:nood_food/views/pages/home.dart';
 import 'package:nood_food/views/pages/meals/meals.dart';
 import 'package:provider/provider.dart';
@@ -16,12 +17,29 @@ class PageNavigator extends StatefulWidget {
 }
 
 class _PageNavigatorState extends State<PageNavigator> {
-  final DBService _dbService = DBService(uid: AuthService().userUid);
+  late final AuthService _authService;
+  late final DBService _dbService;
   double dailyCaloriesAllowed = 3200.0;
   DateTime _selectedDay = DateTime.now();
 
   int _selectedPageIndex = 0;
   final List<String> _pageTitles = ['Nood Food', 'Meals', 'Account'];
+
+  void _showAccountInfo(BuildContext context) {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const AccountInfo()));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = AuthService();
+    _dbService = DBService(uid: _authService.userUid);
+    if (_authService.isNewUser) {
+      // Once built, we can deal with getting new user account info.
+      Future.microtask(() => _showAccountInfo(context));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

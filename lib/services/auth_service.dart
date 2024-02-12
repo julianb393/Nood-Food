@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nood_food/models/nf_user.dart';
+import 'package:nood_food/services/db_service.dart';
 
 /// Authentication service layer for interacting with the backend in terms of
 /// authentication of users
@@ -7,7 +8,12 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   NFUser? _parseUserFromFirebaseUser(User? fbUser) {
-    return fbUser == null ? null : NFUser(fbUser.uid);
+    return fbUser == null
+        ? null
+        : NFUser(
+            uid: fbUser.uid,
+            displayName: fbUser.displayName,
+          );
   }
 
   /// Creates a stream on changes in user's authentication state, i.e. is
@@ -20,10 +26,19 @@ class AuthService {
     return _auth.currentUser?.uid;
   }
 
+  bool get isNewUser {
+    return _auth.currentUser?.displayName == null;
+  }
+
+  String get displayName {
+    return _auth.currentUser?.displayName ?? 'User';
+  }
+
   Future<NFUser?> registerWithEmail(String email, String password) async {
     UserCredential? cred;
     cred = await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
+
     return _parseUserFromFirebaseUser(cred.user);
   }
 
@@ -36,5 +51,11 @@ class AuthService {
 
   Future<void> logout() async {
     await _auth.signOut();
+  }
+
+  Future<void> updateAccountInfo(String displayName, DateTime? dob, String? sex,
+      double? weight, double? height) async {
+    await _auth.currentUser!.updateDisplayName(displayName);
+    await DBService(uid: userUid).updateUserDetails(dob, weight, height);
   }
 }
