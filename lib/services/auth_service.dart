@@ -26,14 +26,6 @@ class AuthService {
     return _auth.currentUser?.uid;
   }
 
-  bool get isNewUser {
-    return _auth.currentUser?.displayName == null;
-  }
-
-  String get displayName {
-    return _auth.currentUser?.displayName ?? 'User';
-  }
-
   Future<NFUser?> registerWithEmail(String email, String password) async {
     UserCredential? cred;
     cred = await _auth.createUserWithEmailAndPassword(

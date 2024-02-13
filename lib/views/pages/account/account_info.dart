@@ -6,7 +6,8 @@ import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/util/string_extension.dart';
 
 class AccountInfo extends StatefulWidget {
-  const AccountInfo({super.key});
+  final Function? rebuildParentFunc;
+  const AccountInfo({super.key, this.rebuildParentFunc});
 
   @override
   State<AccountInfo> createState() => _AccountInfoState();
@@ -166,7 +167,18 @@ class _AccountInfoState extends State<AccountInfo> {
                     await _authService.updateAccountInfo(
                         _displayName, _dob, _sex, _weight, _height);
                     setState(() => _isLoading = false);
-                    if (mounted) Navigator.pop(context);
+
+                    // In the case of a new user, we directly built this widget
+                    // on the main widget tree. So this function should rebuild
+                    // the parent and tell it that this user is no longer new.
+                    if (widget.rebuildParentFunc != null) {
+                      widget.rebuildParentFunc!();
+                      return;
+                    }
+                    // Otherwise, it was navigated to and we can just pop it.
+                    else {
+                      if (mounted) Navigator.pop(context);
+                    }
                   },
             child: _isLoading ? const Loader() : const Text('Continue'),
           )),

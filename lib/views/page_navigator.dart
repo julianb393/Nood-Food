@@ -10,7 +10,8 @@ import 'package:nood_food/views/pages/meals/meals.dart';
 import 'package:provider/provider.dart';
 
 class PageNavigator extends StatefulWidget {
-  const PageNavigator({super.key});
+  final bool isNewUser;
+  const PageNavigator({super.key, required this.isNewUser});
 
   @override
   State<PageNavigator> createState() => _PageNavigatorState();
@@ -19,15 +20,16 @@ class PageNavigator extends StatefulWidget {
 class _PageNavigatorState extends State<PageNavigator> {
   late final AuthService _authService;
   late final DBService _dbService;
+  late bool _isNewUser;
   double dailyCaloriesAllowed = 3200.0;
   DateTime _selectedDay = DateTime.now();
 
   int _selectedPageIndex = 0;
   final List<String> _pageTitles = ['Nood Food', 'Meals', 'Account'];
 
-  void _showAccountInfo(BuildContext context) {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const AccountInfo()));
+  // Will allow the child Account Info widget to rebuild.
+  void _rebuildNotNewUser() {
+    setState(() => _isNewUser = false);
   }
 
   @override
@@ -35,14 +37,14 @@ class _PageNavigatorState extends State<PageNavigator> {
     super.initState();
     _authService = AuthService();
     _dbService = DBService(uid: _authService.userUid);
-    if (_authService.isNewUser) {
-      // Once built, we can deal with getting new user account info.
-      Future.microtask(() => _showAccountInfo(context));
-    }
+    _isNewUser = widget.isNewUser;
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isNewUser) {
+      return AccountInfo(rebuildParentFunc: _rebuildNotNewUser);
+    }
     return StreamProvider<List<Food>>.value(
       value: _dbService.getFoodsFromDate(_selectedDay),
       initialData: const [],
