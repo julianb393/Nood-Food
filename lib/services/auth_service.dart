@@ -26,6 +26,10 @@ class AuthService {
     return _auth.currentUser?.uid;
   }
 
+  NFUser? get currentUser {
+    return _parseUserFromFirebaseUser(_auth.currentUser);
+  }
+
   Future<NFUser?> registerWithEmail(String email, String password) async {
     UserCredential? cred;
     cred = await _auth.createUserWithEmailAndPassword(

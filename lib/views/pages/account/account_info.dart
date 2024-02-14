@@ -18,6 +18,7 @@ class _AccountInfoState extends State<AccountInfo> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   final DateFormat _df = DateFormat(DateFormat.YEAR_NUM_MONTH_DAY);
   final TextEditingController _dobController = TextEditingController();
+  late final bool _fillInitialData;
   int? _age;
   bool _isLoading = false;
 
@@ -37,11 +38,18 @@ class _AccountInfoState extends State<AccountInfo> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // This means the page was opened via Settings.
+    _fillInitialData = widget.rebuildParentFunc == null;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Account Information'),
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: _fillInitialData,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -51,12 +59,14 @@ class _AccountInfoState extends State<AccountInfo> {
           children: [
             // TODO: allow uploading image
             const CircleAvatar(radius: 50, child: Icon(Icons.person, size: 45)),
+
             const SizedBox(height: 20),
             Form(
               key: _formKey,
               child: Column(
                 children: [
                   TextFormField(
+                    initialValue: _authService.currentUser?.displayName,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'This field is required.';
@@ -180,7 +190,9 @@ class _AccountInfoState extends State<AccountInfo> {
                       if (mounted) Navigator.pop(context);
                     }
                   },
-            child: _isLoading ? const Loader() : const Text('Continue'),
+            child: _isLoading
+                ? const Loader()
+                : Text(_fillInitialData ? 'Save Changes' : 'Continue'),
           )),
     );
   }
