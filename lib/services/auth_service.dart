@@ -52,6 +52,6 @@ class AuthService {
   Future<void> updateAccountInfo(String displayName, DateTime? dob, String? sex,
       double? weight, double? height) async {
     await _auth.currentUser!.updateDisplayName(displayName);
-    await DBService(uid: userUid).updateUserDetails(dob, weight, height);
+    await DBService(uid: userUid).updateUserDetails(dob, weight, sex, height);
   }
 }

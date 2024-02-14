@@ -103,9 +103,10 @@ class DBService {
   }
 
   Future<void> updateUserDetails(
-      DateTime? dob, double? weight, double? height) async {
+      DateTime? dob, double? weight, String? sex, double? height) async {
     await _userCollection.doc(uid).set({
       if (dob != null) 'dob': _df.format(dob),
+      if (sex != null) 'sex': sex,
       if (weight != null) 'weight': weight,
       if (height != null) 'height': height,
     }, SetOptions(merge: true));
