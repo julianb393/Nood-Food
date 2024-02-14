@@ -351,7 +351,6 @@ class _FoodEditorState extends State<FoodEditor> {
                     return;
                   }
                   setState(() => _isLoading = true);
-                  Future.delayed(Duration(seconds: 30));
                   _isNewEntry
                       ? await _dbService.writeFood(widget.day, _newFood)
                       : await _dbService.updateFood(widget.day, _newFood);
