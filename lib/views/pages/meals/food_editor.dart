@@ -9,6 +9,7 @@ import 'package:nood_food/util/barcode_scan.dart';
 import 'package:nood_food/util/macronutrient.dart';
 import 'package:nood_food/util/meal_type.dart';
 import 'package:nood_food/util/string_extension.dart';
+import 'package:nood_food/views/pages/meals/food_search.dart';
 
 class FoodEditor extends StatefulWidget {
   final MealType mealType;
@@ -88,6 +89,28 @@ class _FoodEditorState extends State<FoodEditor> {
         computeTotalCalories(_proteinConsumed, _carbsConsumed, _fatConsumed);
   }
 
+  void _showFoodSeach() async {
+    Food? selectedFood = await showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return const FoodSearch();
+        });
+    if (selectedFood == null) return;
+    // fill in the details.
+    setState(() {
+      _newFood = selectedFood;
+      _nutrition = _newFood.nutrition;
+
+      _nameController.text = _newFood.name;
+      _amountController.text = _nutrition.amount.toString();
+      _proteinController.text = _nutrition.protein.toString();
+      _carbsController.text = _nutrition.carbs.toString();
+      _fatController.text = _nutrition.fat.toString();
+      _consumedAmountController.text = _newFood.consumedAmount.toString();
+      _updateSummary();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,7 +120,12 @@ class _FoodEditorState extends State<FoodEditor> {
           children: [
             const Text('Food Editor'),
             _isNewEntry
-                ? const SizedBox()
+                ? IconButton(
+                    onPressed: () {
+                      _showFoodSeach();
+                    },
+                    icon: const Icon(Icons.search),
+                  )
                 : IconButton(
                     onPressed: () async {
                       setState(() => _isLoading = true);
@@ -263,7 +291,7 @@ class _FoodEditorState extends State<FoodEditor> {
                             _nameController.text = scannedData['name'];
                             _newFood.name = _nameController.text;
                             _amountController.text = scannedData['amount'];
-                            _newFood.consumedAmount =
+                            _nutrition.amount =
                                 double.parse(_amountController.text);
                             _proteinController.text = scannedData['protein'];
                             _nutrition.protein =

@@ -33,6 +33,7 @@ class DBService {
     );
   }
 
+  /// Stream used for live updates to widgets
   Stream<List<Food>> getFoodsFromDate(DateTime date) {
     return _userCollection
         .doc(uid)
@@ -40,6 +41,33 @@ class DBService {
         .snapshots()
         .map((snapshot) =>
             snapshot.docs.map((doc) => _parseFoodFromDoc(doc)).toList());
+  }
+
+  Future<List<Food>> getLastTwoDaysOfFoods() async {
+    List<Food> foods = [];
+    DateTime now = DateTime.now();
+    String dayZero = _df.format(now);
+    String dayOne = _df.format(now.subtract(const Duration(days: 1)));
+    String dayTwo = _df.format(now.subtract(const Duration(days: 2)));
+
+    QuerySnapshot qsZero = await _userCollection
+        .doc(uid)
+        .collection(dayZero)
+        .get(const GetOptions(source: Source.cache));
+    QuerySnapshot qsOne = await _userCollection
+        .doc(uid)
+        .collection(dayOne)
+        .get(const GetOptions(source: Source.cache));
+    QuerySnapshot qsTwo = await _userCollection
+        .doc(uid)
+        .collection(dayTwo)
+        .get(const GetOptions(source: Source.cache));
+
+    foods.addAll(qsZero.docs.map(_parseFoodFromDoc));
+    foods.addAll(qsOne.docs.map(_parseFoodFromDoc));
+    foods.addAll(qsTwo.docs.map(_parseFoodFromDoc));
+
+    return foods;
   }
 
   Future<void> writeFood(DateTime date, Food food) async {
