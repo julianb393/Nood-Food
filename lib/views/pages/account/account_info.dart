@@ -59,7 +59,6 @@ class _AccountInfoState extends State<AccountInfo> {
           children: [
             // TODO: allow uploading image
             const CircleAvatar(radius: 50, child: Icon(Icons.person, size: 45)),
-
             const SizedBox(height: 20),
             Form(
               key: _formKey,
@@ -157,6 +156,42 @@ class _AccountInfoState extends State<AccountInfo> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          decoration: formDecoration.copyWith(
+                              labelText: 'Daily Calorie Limit (kcal)'),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (builder) {
+                                return AlertDialog(
+                                  title: const Text('Daily Calorie Limit'),
+                                  icon: const Icon(Icons.question_mark),
+                                  content:
+                                      const Text('This is under development!'),
+                                  actions: [
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('Close'),
+                                      ),
+                                    )
+                                  ],
+                                );
+                              });
+                        },
+                        icon: const Icon(Icons.question_mark),
+                      )
+                    ],
+                  )
                 ],
               ),
             )
