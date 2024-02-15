@@ -15,6 +15,7 @@ class Account extends StatelessWidget {
         children: [
           Expanded(
             child: ListView(
+              physics: const NeverScrollableScrollPhysics(),
               children: [
                 Card(
                   child: InkWell(
