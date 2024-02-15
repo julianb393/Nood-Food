@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:nood_food/models/food.dart';
+import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/models/nutritional_facts.dart';
+import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/util/meal_type.dart';
 
 class DBService {
@@ -41,6 +43,26 @@ class DBService {
         .snapshots()
         .map((snapshot) =>
             snapshot.docs.map((doc) => _parseFoodFromDoc(doc)).toList());
+  }
+
+  NFUser? _parseUserFromSnapshot(DocumentSnapshot snapshot) {
+    NFUser? user = AuthService().currentUser;
+    if (user == null) return null;
+
+    Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+    String? dob = data?['dob'];
+    String? sex = data?['sex'];
+    double? weight = data?['weight'];
+    double? height = data?['height'];
+    double? calorieLimit = data?['calorie_limit'];
+
+    user.updateUser(dob, sex, weight, height, calorieLimit);
+    return user;
+  }
+
+  Stream<NFUser?> get userAccountInfo {
+    print('reached getting account info');
+    return _userCollection.doc(uid).snapshots().map(_parseUserFromSnapshot);
   }
 
   Future<List<Food>> getLastTwoDaysOfFoods() async {
@@ -102,13 +124,14 @@ class DBService {
         .delete();
   }
 
-  Future<void> updateUserDetails(
-      DateTime? dob, double? weight, String? sex, double? height) async {
+  Future<void> updateUserDetails(DateTime? dob, double? weight, String? sex,
+      double? height, double? calorieLimit) async {
     await _userCollection.doc(uid).set({
-      if (dob != null) 'dob': _df.format(dob),
-      if (sex != null) 'sex': sex,
-      if (weight != null) 'weight': weight,
-      if (height != null) 'height': height,
+      'dob': dob == null ? null : _df.format(dob),
+      'sex': sex,
+      'weight': weight,
+      'height': height,
+      'calorie_limit': calorieLimit,
     }, SetOptions(merge: true));
   }
 }

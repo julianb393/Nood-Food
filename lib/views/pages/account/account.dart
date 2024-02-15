@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/views/pages/account/account_info.dart';
 import 'package:nood_food/views/pages/account/settings.dart';
 
 class Account extends StatelessWidget {
-  const Account({super.key});
+  final NFUser user;
+  const Account({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class Account extends StatelessWidget {
                     onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const AccountInfo())),
+                            builder: (context) => AccountInfo(user: user))),
                     child: const ListTile(
                       title: Text('Update Account Information'),
                       leading: Icon(Icons.person),

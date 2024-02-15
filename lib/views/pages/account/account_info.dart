@@ -2,12 +2,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:nood_food/common/form_decoration.dart';
 import 'package:nood_food/common/loader.dart';
+import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/util/string_extension.dart';
 
 class AccountInfo extends StatefulWidget {
   final Function? rebuildParentFunc;
-  const AccountInfo({super.key, this.rebuildParentFunc});
+  final NFUser? user;
+  const AccountInfo({super.key, this.rebuildParentFunc, this.user});
 
   @override
   State<AccountInfo> createState() => _AccountInfoState();
@@ -16,7 +18,7 @@ class AccountInfo extends StatefulWidget {
 class _AccountInfoState extends State<AccountInfo> {
   final AuthService _authService = AuthService();
   final GlobalKey<FormState> _formKey = GlobalKey();
-  final DateFormat _df = DateFormat(DateFormat.YEAR_NUM_MONTH_DAY);
+  final DateFormat _df = DateFormat('yyyy-MM-dd');
   final TextEditingController _dobController = TextEditingController();
   late final bool _fillInitialData;
   int? _age;
@@ -28,6 +30,7 @@ class _AccountInfoState extends State<AccountInfo> {
   String? _sex;
   double? _weight;
   double? _height;
+  double? _calorieLimit;
 
   String? _numValidator(String? value) {
     // field is optional, but if a value was actually inputted, check it.
@@ -42,6 +45,14 @@ class _AccountInfoState extends State<AccountInfo> {
     super.initState();
     // This means the page was opened via Settings.
     _fillInitialData = widget.rebuildParentFunc == null;
+    if (!_fillInitialData) return;
+    _displayName = widget.user?.displayName ?? '';
+    _dob = DateTime.tryParse(widget.user!.dob ?? '');
+    _dobController.text = _dob != null ? _df.format(_dob!) : '';
+    _sex = widget.user?.sex;
+    _weight = widget.user?.weight;
+    _height = widget.user?.height;
+    _calorieLimit = widget.user?.calorieLimit;
   }
 
   @override
@@ -65,11 +76,12 @@ class _AccountInfoState extends State<AccountInfo> {
               child: Column(
                 children: [
                   TextFormField(
-                    initialValue: _authService.currentUser?.displayName,
+                    initialValue: widget.user?.displayName,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'This field is required.';
                       }
+                      return null;
                     },
                     onChanged: (val) => setState(() => _displayName = val),
                     decoration: formDecoration.copyWith(
@@ -120,6 +132,7 @@ class _AccountInfoState extends State<AccountInfo> {
                     children: [
                       Expanded(
                         child: DropdownButtonFormField(
+                          value: _sex,
                           decoration: formDecoration.copyWith(
                             labelText: 'Sex',
                           ),
@@ -133,9 +146,12 @@ class _AccountInfoState extends State<AccountInfo> {
                       const SizedBox(width: 5),
                       Expanded(
                         child: TextFormField(
+                          initialValue:
+                              _weight == null ? '' : _weight.toString(),
                           validator: _numValidator,
-                          onChanged: (val) =>
-                              setState(() => _weight = double.parse(val)),
+                          onChanged: (val) => setState(() {
+                            _weight = val.isEmpty ? null : double.parse(val);
+                          }),
                           keyboardType: TextInputType.number,
                           decoration: formDecoration.copyWith(
                             labelText: 'Weight (lbs)',
@@ -145,9 +161,12 @@ class _AccountInfoState extends State<AccountInfo> {
                       const SizedBox(width: 5),
                       Expanded(
                         child: TextFormField(
+                          initialValue:
+                              _height == null ? '' : _height.toString(),
                           validator: _numValidator,
-                          onChanged: (val) =>
-                              setState(() => _height = double.parse(val)),
+                          onChanged: (val) => setState(() {
+                            _height = val.isEmpty ? null : double.parse(val);
+                          }),
                           keyboardType: TextInputType.number,
                           decoration: formDecoration.copyWith(
                             labelText: 'Height (cm)',
@@ -161,6 +180,16 @@ class _AccountInfoState extends State<AccountInfo> {
                     children: [
                       Expanded(
                         child: TextFormField(
+                          initialValue: _calorieLimit == null
+                              ? ''
+                              : _calorieLimit.toString(),
+                          validator: _numValidator,
+                          onChanged: (val) {
+                            setState(() {
+                              _calorieLimit =
+                                  val.isEmpty ? null : double.parse(val);
+                            });
+                          },
                           keyboardType: TextInputType.number,
                           decoration: formDecoration.copyWith(
                               labelText: 'Daily Calorie Limit (kcal)'),
@@ -209,8 +238,19 @@ class _AccountInfoState extends State<AccountInfo> {
 
                     setState(() => _isLoading = true);
                     // TOOD: error management
-                    await _authService.updateAccountInfo(
-                        _displayName, _dob, _sex, _weight, _height);
+                    bool noChanges = true;
+                    noChanges &= widget.user!.displayName == _displayName;
+                    noChanges &= widget.user?.dob ==
+                        (_dob != null ? _df.format(_dob!) : '');
+                    noChanges &= widget.user?.sex == _sex;
+                    noChanges &= widget.user?.weight == _weight;
+                    noChanges &= widget.user?.height == _height;
+                    noChanges &= widget.user?.calorieLimit == _calorieLimit;
+                    // Don't waste a write request if no changes happened.
+                    if (!noChanges) {
+                      await _authService.updateAccountInfo(_displayName, _dob,
+                          _sex, _weight, _height, _calorieLimit);
+                    }
                     setState(() => _isLoading = false);
 
                     // In the case of a new user, we directly built this widget
@@ -221,8 +261,8 @@ class _AccountInfoState extends State<AccountInfo> {
                       return;
                     }
                     // Otherwise, it was navigated to and we can just pop it.
-                    else {
-                      if (mounted) Navigator.pop(context);
+                    else if (mounted) {
+                      Navigator.pop(context);
                     }
                   },
             child: _isLoading

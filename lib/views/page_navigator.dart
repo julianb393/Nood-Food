@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nood_food/common/date_picker.dart';
+import 'package:nood_food/common/loader.dart';
 import 'package:nood_food/models/food.dart';
+import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/services/db_service.dart';
 import 'package:nood_food/views/pages/account/account.dart';
@@ -77,21 +79,29 @@ class _PageNavigatorState extends State<PageNavigator> {
           selectedItemColor: const Color.fromARGB(255, 170, 231, 220),
           onTap: (index) => setState(() => _selectedPageIndex = index),
         ),
-        body: [
-          Column(
-            children: [
-              DatePicker(
-                selectedDate: _selectedDay,
-                changeDay: (day) {
-                  setState(() => _selectedDay = day);
-                },
+        body: StreamBuilder(
+          stream: _dbService.userAccountInfo,
+          builder: (context, AsyncSnapshot<NFUser?> snapshot) {
+            if (!snapshot.hasData) {
+              return const Expanded(child: Loader());
+            }
+            return [
+              Column(
+                children: [
+                  DatePicker(
+                    selectedDate: _selectedDay,
+                    changeDay: (day) {
+                      setState(() => _selectedDay = day);
+                    },
+                  ),
+                  Expanded(child: Home(user: snapshot.data!))
+                ],
               ),
-              const Expanded(child: Home()),
-            ],
-          ),
-          Meals(day: _selectedDay),
-          const Account(),
-        ][_selectedPageIndex],
+              Meals(day: _selectedDay),
+              Account(user: snapshot.data!),
+            ][_selectedPageIndex];
+          },
+        ),
       ),
     );
   }

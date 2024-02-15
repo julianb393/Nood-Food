@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:nood_food/models/food.dart';
+import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/util/macronutrient.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final NFUser user;
+  const Home({super.key, required this.user});
 
   @override
   State<Home> createState() => _HomeState();
