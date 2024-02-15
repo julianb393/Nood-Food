@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nood_food/models/food.dart';
 import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/util/macronutrient.dart';
+import 'package:nood_food/util/style.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:provider/provider.dart';
 
@@ -33,12 +34,15 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final List<Food> foods = Provider.of<List<Food>>(context);
     _computeConsumedMacros(foods);
+    double consumedCalories =
+        computeTotalCalories(_consumedProtein, _consumedCarbs, _consumedFat);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
+          StyledText.titleLarge('Welcome ${widget.user.displayName}'),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -49,14 +53,13 @@ class _HomeState extends State<Home> {
                   'Fat': _consumedFat,
                 },
                 baseChartColor: Colors.grey[50]!.withOpacity(0.15),
-                centerText: '${computeTotalCalories(
-                  _consumedProtein,
-                  _consumedCarbs,
-                  _consumedFat,
-                ).toStringAsFixed(2)} kcal',
+                centerText: '${consumedCalories.toStringAsFixed(2)} kcal',
                 formatChartValues: (val) => '${val.toStringAsFixed(2)} g',
               ),
-              const Text('You have xxx calories remaining.'),
+              widget.user.calorieLimit != null
+                  ? Text(
+                      'You have ${(widget.user.calorieLimit! - consumedCalories).toStringAsFixed(2)} calories remaining.')
+                  : const SizedBox(),
             ],
           )
         ],
