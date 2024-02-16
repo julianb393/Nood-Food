@@ -56,7 +56,7 @@ class AuthService {
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
-    UserCredential? cred =
+    UserCredential cred =
         await FirebaseAuth.instance.signInWithCredential(credential);
     return _parseUserFromFirebaseUser(cred.user);
   }

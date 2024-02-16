@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nood_food/common/date_picker.dart';
 import 'package:nood_food/common/loader.dart';
 import 'package:nood_food/models/food.dart';
 import 'package:nood_food/models/nf_user.dart';
@@ -32,6 +31,15 @@ class _PageNavigatorState extends State<PageNavigator> {
   // Will allow the child Account Info widget to rebuild.
   void _rebuildNotNewUser() {
     setState(() => _isNewUser = false);
+  }
+
+  // Will allow the home to control the date, which can get shared with others.
+  void _updateSelectedDate(DateTime newDate) {
+    setState(() => _selectedDay = newDate);
+  }
+
+  DateTime _getSelectedDate() {
+    return _selectedDay;
   }
 
   @override
@@ -83,19 +91,13 @@ class _PageNavigatorState extends State<PageNavigator> {
           stream: _dbService.userAccountInfo,
           builder: (context, AsyncSnapshot<NFUser?> snapshot) {
             if (!snapshot.hasData) {
-              return const Expanded(child: Loader());
+              return const Loader();
             }
             return [
-              Column(
-                children: [
-                  DatePicker(
-                    selectedDate: _selectedDay,
-                    changeDay: (day) {
-                      setState(() => _selectedDay = day);
-                    },
-                  ),
-                  Expanded(child: Home(user: snapshot.data!))
-                ],
+              Home(
+                user: snapshot.data!,
+                updateDate: _updateSelectedDate,
+                getSelectedDate: _getSelectedDate,
               ),
               Meals(day: _selectedDay),
               Account(user: snapshot.data!),

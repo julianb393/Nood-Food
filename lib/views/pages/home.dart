@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nood_food/common/date_picker.dart';
 import 'package:nood_food/models/food.dart';
 import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/util/macronutrient.dart';
@@ -8,7 +9,14 @@ import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   final NFUser user;
-  const Home({super.key, required this.user});
+  final Function(DateTime) updateDate;
+  final Function getSelectedDate;
+  const Home({
+    super.key,
+    required this.user,
+    required this.updateDate,
+    required this.getSelectedDate,
+  });
 
   @override
   State<Home> createState() => _HomeState();
@@ -39,10 +47,18 @@ class _HomeState extends State<Home> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          StyledText.titleLarge('Welcome ${widget.user.displayName}'),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DatePicker(
+                selectedDate: widget.getSelectedDate(),
+                changeDay: (day) => widget.updateDate(day),
+              ),
+              StyledText.titleLarge('Welcome ${widget.user.displayName}'),
+            ],
+          ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
