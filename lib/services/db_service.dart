@@ -61,7 +61,6 @@ class DBService {
   }
 
   Stream<NFUser?> get userAccountInfo {
-    print('reached getting account info');
     return _userCollection.doc(uid).snapshots().map(_parseUserFromSnapshot);
   }
 

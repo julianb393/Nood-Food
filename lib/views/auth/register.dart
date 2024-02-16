@@ -141,7 +141,11 @@ class _RegisterState extends State<Register> {
           const Divider(color: Colors.grey),
           SignInButton(
             Buttons.Google,
-            onPressed: () {},
+            onPressed: () async {
+              setState(() => _isLoading = true);
+              await _authService.logInWithGoogle();
+              setState(() => _isLoading = false);
+            },
           ),
           SignInButton(
             Buttons.Apple,

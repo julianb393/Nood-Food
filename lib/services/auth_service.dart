@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/db_service.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 /// Authentication service layer for interacting with the backend in terms of
 /// authentication of users
@@ -39,9 +40,24 @@ class AuthService {
   }
 
   Future<NFUser?> loginWithEmail(String email, String password) async {
-    UserCredential? cred;
-    cred = await _auth.signInWithEmailAndPassword(
+    UserCredential? cred = await _auth.signInWithEmailAndPassword(
         email: email, password: password);
+    return _parseUserFromFirebaseUser(cred.user);
+  }
+
+  Future<NFUser?> logInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+    UserCredential? cred =
+        await FirebaseAuth.instance.signInWithCredential(credential);
     return _parseUserFromFirebaseUser(cred.user);
   }
 

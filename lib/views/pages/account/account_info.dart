@@ -238,14 +238,20 @@ class _AccountInfoState extends State<AccountInfo> {
 
                     setState(() => _isLoading = true);
                     // TOOD: error management
-                    bool noChanges = true;
-                    noChanges &= widget.user!.displayName == _displayName;
-                    noChanges &= widget.user?.dob ==
-                        (_dob != null ? _df.format(_dob!) : '');
-                    noChanges &= widget.user?.sex == _sex;
-                    noChanges &= widget.user?.weight == _weight;
-                    noChanges &= widget.user?.height == _height;
-                    noChanges &= widget.user?.calorieLimit == _calorieLimit;
+
+                    // widget was built after registration... we can skip check.\
+                    bool noChanges = false;
+                    if (widget.user != null) {
+                      noChanges = true;
+                      noChanges &= widget.user!.displayName == _displayName;
+                      noChanges &= widget.user?.dob ==
+                          (_dob != null ? _df.format(_dob!) : '');
+                      noChanges &= widget.user?.sex == _sex;
+                      noChanges &= widget.user?.weight == _weight;
+                      noChanges &= widget.user?.height == _height;
+                      noChanges &= widget.user?.calorieLimit == _calorieLimit;
+                    }
+
                     // Don't waste a write request if no changes happened.
                     if (!noChanges) {
                       await _authService.updateAccountInfo(_displayName, _dob,

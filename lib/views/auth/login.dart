@@ -17,7 +17,8 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   final _authService = AuthService();
-  bool _isLoading = false;
+  bool _emailIsLoading = false;
+  bool _googleIsLoading = false;
   bool _hidePassword = true;
   String inputEmail = '';
   String inputPassword = '';
@@ -75,7 +76,7 @@ class _LoginState extends State<Login> {
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(45),
                   ),
-                  onPressed: _isLoading
+                  onPressed: _emailIsLoading || _googleIsLoading
                       ? null
                       : () async {
                           if (!_formKey.currentState!.validate()) {
@@ -84,7 +85,7 @@ class _LoginState extends State<Login> {
                           }
 
                           setState(() {
-                            _isLoading = true;
+                            _emailIsLoading = true;
                           });
 
                           // Would show whether login unsuccessful, otherwise
@@ -106,7 +107,7 @@ class _LoginState extends State<Login> {
                           }
 
                           setState(() {
-                            _isLoading = false;
+                            _emailIsLoading = false;
                           });
 
                           // This check is needed for async functions for snackbars.
@@ -119,16 +120,22 @@ class _LoginState extends State<Login> {
                             );
                           }
                         },
-                  child: _isLoading ? const Loader() : const Text('Login'),
+                  child: _emailIsLoading ? const Loader() : const Text('Login'),
                 ),
               ],
             ),
           ),
           const Divider(color: Colors.grey),
-          SignInButton(
-            Buttons.Google,
-            onPressed: () {},
-          ),
+          _googleIsLoading
+              ? const Loader()
+              : SignInButton(
+                  Buttons.Google,
+                  onPressed: () async {
+                    setState(() => _googleIsLoading = true);
+                    await _authService.logInWithGoogle();
+                    setState(() => _googleIsLoading = false);
+                  },
+                ),
           SignInButton(
             Buttons.Apple,
             onPressed: () {},
