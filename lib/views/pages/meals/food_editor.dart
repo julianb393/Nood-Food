@@ -168,7 +168,7 @@ class _FoodEditorState extends State<FoodEditor> {
                           Expanded(child: Divider()),
                           Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Text('Serving Nutritional Facts'),
+                            child: Text('Nutritional Facts'),
                           ),
                           Expanded(child: Divider()),
                         ],
