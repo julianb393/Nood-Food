@@ -71,6 +71,7 @@ class _FoodEditorState extends State<FoodEditor> {
       _carbsController.text = _nutrition.carbs.toString();
       _fatController.text = _nutrition.fat.toString();
       _consumedAmountController.text = _newFood.consumedAmount.toString();
+      _updateSummary();
     }
   }
 
