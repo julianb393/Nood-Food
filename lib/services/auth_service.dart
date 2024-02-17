@@ -78,4 +78,39 @@ class AuthService {
     await DBService(uid: userUid)
         .updateUserDetails(dob, weight, sex, height, calorieLimit);
   }
+
+  Future<void> deleteUserAccount() async {
+    try {
+      await FirebaseAuth.instance.currentUser!.delete();
+    } on FirebaseAuthException catch (e) {
+      print(e);
+      if (e.code == "requires-recent-login") {
+        await _reauthenticateAndDelete();
+      } else {
+        // Handle other Firebase exceptions
+      }
+    } catch (e) {
+      print(e);
+      // Handle general exception
+    }
+  }
+
+  /// Since this is a security-sensitive operation, Firebase needs a relatively
+  /// fresh sign-in token and might throw an exception
+  Future<void> _reauthenticateAndDelete() async {
+    try {
+      final providerData = _auth.currentUser?.providerData.first;
+
+      if (AppleAuthProvider().providerId == providerData!.providerId) {
+        await _auth.currentUser!
+            .reauthenticateWithProvider(AppleAuthProvider());
+      } else if (GoogleAuthProvider().providerId == providerData.providerId) {
+        await _auth.currentUser!
+            .reauthenticateWithProvider(GoogleAuthProvider());
+      }
+      await _auth.currentUser?.delete();
+    } catch (e) {
+      // Handle exceptions
+    }
+  }
 }
