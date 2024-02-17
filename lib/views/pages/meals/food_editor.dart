@@ -63,8 +63,8 @@ class _FoodEditorState extends State<FoodEditor> {
           meal: widget.mealType);
     } else {
       _isNewEntry = false;
-      _newFood = widget.food!;
-      _nutrition = widget.food!.nutrition;
+      _newFood = widget.food!.clone();
+      _nutrition = widget.food!.nutrition.clone();
       _nameController.text = _newFood.name;
       _amountController.text = _nutrition.amount.toString();
       _proteinController.text = _nutrition.protein.toString();
@@ -380,9 +380,11 @@ class _FoodEditorState extends State<FoodEditor> {
                     return;
                   }
                   setState(() => _isLoading = true);
-                  _isNewEntry
-                      ? await _dbService.writeFood(widget.day, _newFood)
-                      : await _dbService.updateFood(widget.day, _newFood);
+                  if (_isNewEntry) {
+                    await _dbService.writeFood(widget.day, _newFood);
+                  } else if (widget.food != _newFood) {
+                    await _dbService.updateFood(widget.day, _newFood);
+                  }
                   setState(() => _isLoading = false);
                   if (!mounted) return;
                   Navigator.pop(context);

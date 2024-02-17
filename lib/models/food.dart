@@ -52,4 +52,28 @@ class Food {
       'meal': meal.name,
     };
   }
+
+  Food clone() {
+    return Food(
+        uid: uid,
+        name: name,
+        consumedAmount: consumedAmount,
+        consumedUom: consumedUom,
+        nutrition: nutrition.clone(),
+        meal: meal);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is Food &&
+        name == other.name &&
+        consumedAmount == other.consumedAmount &&
+        consumedUom == other.consumedUom &&
+        nutrition == other.nutrition &&
+        meal == other.meal;
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(uid, name, consumedAmount, consumedUom, nutrition, meal);
 }
