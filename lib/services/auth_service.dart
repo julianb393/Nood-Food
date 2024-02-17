@@ -31,6 +31,13 @@ class AuthService {
     return _parseUserFromFirebaseUser(_auth.currentUser);
   }
 
+  /// If the last sign in is the same as when the account was created, then the
+  /// user is new.
+  bool get isNewUser {
+    UserMetadata? metadata = _auth.currentUser?.metadata;
+    return metadata?.lastSignInTime == metadata?.creationTime;
+  }
+
   Future<NFUser?> registerWithEmail(String email, String password) async {
     UserCredential? cred;
     cred = await _auth.createUserWithEmailAndPassword(
