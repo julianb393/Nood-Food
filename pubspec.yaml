@@ -53,6 +53,7 @@ dependencies:
   data_table_2: ^2.5.10
   flutter_spinkit: ^5.2.0
   google_sign_in: '^6.2.1'
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +68,12 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+# To generate the icons.
+flutter_icons:
+  android: true
+  ios: true
+  image_path: 'assets/icons/nood_food_icon.png'
 
 # The following section is specific to Flutter packages.
 flutter:
