@@ -2,12 +2,13 @@
 class NFUser {
   final String uid;
   String? displayName;
+  String? photoURL;
   String? dob;
   String? sex;
   double? weight;
   double? height;
   double? calorieLimit;
-  NFUser({required this.uid, this.displayName});
+  NFUser({required this.uid, this.displayName, this.photoURL});
 
   void updateUser(String? dob, String? sex, double? weight, double? height,
       double? calorieLimit) {

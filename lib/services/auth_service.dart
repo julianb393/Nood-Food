@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/db_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -14,7 +17,7 @@ class AuthService {
         : NFUser(
             uid: fbUser.uid,
             displayName: fbUser.displayName,
-          );
+            photoURL: fbUser.photoURL);
   }
 
   /// Creates a stream on changes in user's authentication state, i.e. is
@@ -72,9 +75,17 @@ class AuthService {
     await _auth.signOut();
   }
 
-  Future<void> updateAccountInfo(String displayName, DateTime? dob, String? sex,
-      double? weight, double? height, double? calorieLimit) async {
+  Future<void> updateAccountInfo(
+      String displayName,
+      DateTime? dob,
+      String? sex,
+      double? weight,
+      double? height,
+      double? calorieLimit,
+      File? profilePic) async {
     await _auth.currentUser!.updateDisplayName(displayName);
+    String? photoURL = await uploadFile(profilePic);
+    await _auth.currentUser!.updatePhotoURL(photoURL);
     await DBService(uid: userUid)
         .updateUserDetails(dob, weight, sex, height, calorieLimit);
   }
@@ -112,5 +123,17 @@ class AuthService {
     } catch (e) {
       // Handle exceptions
     }
+  }
+
+  /// Uses Firebase Storage to save the image, then generates a photo URL for
+  /// firebase auth.
+  Future<String?> uploadFile(File? image) async {
+    if (image == null) return null;
+    Reference ref = FirebaseStorage.instance
+        .ref()
+        .child(_auth.currentUser!.uid)
+        .child("profile_picture.jpg");
+    await ref.putFile(image);
+    return await ref.getDownloadURL();
   }
 }

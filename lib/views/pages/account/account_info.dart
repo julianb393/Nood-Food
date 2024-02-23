@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:nood_food/common/form_decoration.dart';
 import 'package:nood_food/common/loader.dart';
 import 'package:nood_food/models/nf_user.dart';
@@ -24,6 +28,8 @@ class _AccountInfoState extends State<AccountInfo> {
   int? _age;
   bool _isLoading = false;
 
+  ImagePicker imgPicker = ImagePicker();
+
   // Fields to be used for user profile.
   late String _displayName;
   DateTime? _dob;
@@ -32,12 +38,45 @@ class _AccountInfoState extends State<AccountInfo> {
   double? _height;
   double? _calorieLimit;
 
+  File? _selectedImage;
+
   String? _numValidator(String? value) {
     // field is optional, but if a value was actually inputted, check it.
     if (value != null && value.isNotEmpty && !value.isNumeric()) {
       return 'please Input a number';
     }
     return null;
+  }
+
+  Widget _showProfilePic() {
+    if (_selectedImage == null) {
+      // Nothing selected
+      String? photoURL = widget.user?.photoURL;
+      return photoURL == null
+          ? const CircleAvatar(
+              radius: 55,
+              child: Icon(Icons.person, size: 45),
+            )
+          : CachedNetworkImage(
+              imageUrl: photoURL,
+              placeholder: (context, val) => const Loader(),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
+              imageBuilder: (context, imageProvider) {
+                return CircleAvatar(
+                  radius: 55,
+                  backgroundImage: imageProvider,
+                );
+              },
+            );
+    }
+    return CircleAvatar(
+      radius: 55,
+      backgroundColor: Colors.transparent,
+      backgroundImage: Image.file(
+        _selectedImage!,
+        fit: BoxFit.cover,
+      ).image,
+    );
   }
 
   @override
@@ -65,11 +104,35 @@ class _AccountInfoState extends State<AccountInfo> {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // TODO: allow uploading image
-            const CircleAvatar(radius: 50, child: Icon(Icons.person, size: 45)),
+            InkWell(
+              onTap: _isLoading
+                  ? null
+                  : () async {
+                      XFile? picture = await imgPicker.pickImage(
+                          source: ImageSource.gallery);
+                      if (picture == null) return;
+                      setState(() {
+                        _selectedImage = File(picture.path);
+                      });
+                    },
+              child: SizedBox(
+                width: 100,
+                height: 100,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    _showProfilePic(),
+                    const Align(
+                        alignment: Alignment.bottomRight,
+                        child: Icon(Icons.file_upload_outlined))
+                  ],
+                ),
+              ),
+            ),
             const SizedBox(height: 20),
             Form(
               key: _formKey,
@@ -244,6 +307,7 @@ class _AccountInfoState extends State<AccountInfo> {
                     if (widget.user != null) {
                       noChanges = true;
                       noChanges &= widget.user!.displayName == _displayName;
+                      noChanges &= _selectedImage == null;
                       noChanges &= widget.user?.dob ==
                           (_dob != null ? _df.format(_dob!) : '');
                       noChanges &= widget.user?.sex == _sex;
@@ -254,8 +318,15 @@ class _AccountInfoState extends State<AccountInfo> {
 
                     // Don't waste a write request if no changes happened.
                     if (!noChanges) {
-                      await _authService.updateAccountInfo(_displayName, _dob,
-                          _sex, _weight, _height, _calorieLimit);
+                      await _authService.updateAccountInfo(
+                        _displayName,
+                        _dob,
+                        _sex,
+                        _weight,
+                        _height,
+                        _calorieLimit,
+                        _selectedImage,
+                      );
                     }
                     setState(() => _isLoading = false);
 
