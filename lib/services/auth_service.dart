@@ -34,11 +34,13 @@ class AuthService {
     return _parseUserFromFirebaseUser(_auth.currentUser);
   }
 
-  /// If the last sign in is the same as when the account was created, then the
-  /// user is new.
+  /// If the last sign in is the same as when the account was created and they
+  /// did not set the displayname (which is a required field), then the user is
+  /// new.
   bool get isNewUser {
     UserMetadata? metadata = _auth.currentUser?.metadata;
-    return metadata?.lastSignInTime == metadata?.creationTime;
+    return metadata?.lastSignInTime == metadata?.creationTime &&
+        _auth.currentUser?.displayName == null;
   }
 
   Future<NFUser?> registerWithEmail(String email, String password) async {
