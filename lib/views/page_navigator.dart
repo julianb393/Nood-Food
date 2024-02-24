@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:nood_food/common/loader.dart';
 import 'package:nood_food/models/food.dart';
@@ -24,6 +25,8 @@ class _PageNavigatorState extends State<PageNavigator> {
   late bool _isNewUser;
   double dailyCaloriesAllowed = 3200.0;
   DateTime _selectedDay = DateTime.now();
+  Widget _accountIcon = const Icon(Icons.person_outlined);
+  Widget _accountIconActive = const Icon(Icons.person);
 
   int _selectedPageIndex = 0;
   final List<String> _pageTitles = ['Nood Food', 'Meals', 'Account'];
@@ -40,6 +43,34 @@ class _PageNavigatorState extends State<PageNavigator> {
 
   DateTime _getSelectedDate() {
     return _selectedDay;
+  }
+
+  void _setAccountIcon(String? photoURL) {
+    if (photoURL == null) return;
+    // Will be triggered after build is complete.
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {
+          Widget profilePic = CachedNetworkImage(
+            imageUrl: photoURL,
+            placeholder: (context, val) => const Loader(),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+            imageBuilder: (context, imageProvider) {
+              return CircleAvatar(
+                radius: 23,
+                backgroundImage: imageProvider,
+              );
+            },
+          );
+          _accountIcon = CircleAvatar(
+            backgroundColor: Colors.transparent,
+            radius: 25,
+            child: profilePic,
+          );
+          _accountIconActive = CircleAvatar(
+            backgroundColor: Colors.greenAccent,
+            radius: 25,
+            child: profilePic,
+          );
+        }));
   }
 
   @override
@@ -64,20 +95,20 @@ class _PageNavigatorState extends State<PageNavigator> {
           showSelectedLabels: false,
           showUnselectedLabels: false,
           iconSize: 35,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
+          items: <BottomNavigationBarItem>[
+            const BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home),
               label: 'Home',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.fastfood_outlined),
               activeIcon: Icon(Icons.fastfood),
               label: 'Meals',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_outlined),
-              activeIcon: Icon(Icons.person),
+              icon: _accountIcon,
+              activeIcon: _accountIconActive,
               label: 'Account',
             ),
           ],
@@ -93,6 +124,7 @@ class _PageNavigatorState extends State<PageNavigator> {
             if (!snapshot.hasData) {
               return const Loader();
             }
+            _setAccountIcon(snapshot.data!.photoURL);
             return [
               Home(
                 user: snapshot.data!,
