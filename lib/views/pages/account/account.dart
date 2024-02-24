@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nood_food/common/card_button.dart';
 import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/views/pages/account/account_info.dart';
@@ -19,38 +20,27 @@ class Account extends StatelessWidget {
             child: ListView(
               physics: const NeverScrollableScrollPhysics(),
               children: [
-                Card(
-                  child: InkWell(
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AccountInfo(user: user))),
-                    child: const ListTile(
-                      title: Text('Update Account Information'),
-                      leading: Icon(Icons.person),
-                    ),
+                CardButton(
+                  title: 'Account Information',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AccountInfo(user: user)),
                   ),
+                  icon: Icons.person,
                 ),
-                Card(
-                  child: InkWell(
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Settings())),
-                    child: const ListTile(
-                      title: Text('Settings'),
-                      leading: Icon(Icons.settings),
-                    ),
-                  ),
+                CardButton(
+                  title: 'Settings',
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Settings())),
+                  icon: Icons.settings,
                 ),
-                Card(
-                  child: InkWell(
-                    onTap: () => AuthService().logout(),
-                    child: const ListTile(
-                      title: Text('Logout'),
-                      leading: Icon(Icons.logout),
-                    ),
-                  ),
+                CardButton(
+                  title: 'Logout',
+                  onTap: () => AuthService().logout(),
+                  icon: Icons.logout,
                 ),
               ],
             ),
