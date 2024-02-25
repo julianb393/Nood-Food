@@ -4,6 +4,7 @@ import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/views/pages/account/account_info.dart';
 import 'package:nood_food/views/pages/account/change_password.dart';
+import 'package:nood_food/views/pages/account/delete_account_dialog.dart';
 
 class Account extends StatelessWidget {
   final NFUser user;
@@ -33,7 +34,8 @@ class Account extends StatelessWidget {
                   title: 'Change Password',
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ChangePassword()),
+                    MaterialPageRoute(
+                        builder: (context) => const ChangePassword()),
                   ),
                   icon: Icons.password,
                 ),
@@ -49,7 +51,13 @@ class Account extends StatelessWidget {
             color: Colors.red,
             icon: Icons.delete_forever,
             title: 'Delete Account',
-            onTap: () {},
+            onTap: () async {
+              showDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (BuildContext context) => const DeleteAccountDialog(),
+              );
+            },
           ),
           const Divider(),
           const Text('Version: Development')

@@ -92,38 +92,40 @@ class AuthService {
         .updateUserDetails(dob, weight, sex, height, calorieLimit);
   }
 
-  Future<void> deleteUserAccount() async {
+  /// Reauthenticates the user then deletes their account.
+  Future<void> deleteUserAccount(String? confirmedPassword) async {
+    await _reauthenticate(confirmedPassword);
     try {
       await FirebaseAuth.instance.currentUser!.delete();
     } on FirebaseAuthException catch (e) {
-      print(e);
-      if (e.code == "requires-recent-login") {
-        await _reauthenticateAndDelete();
-      } else {
-        // Handle other Firebase exceptions
-      }
-    } catch (e) {
-      print(e);
-      // Handle general exception
+      throw FirebaseAuthException(
+          code: e.code,
+          message:
+              'Something went wrong when attempting to delete your account. Please try again later.');
     }
   }
 
   /// Since this is a security-sensitive operation, Firebase needs a relatively
   /// fresh sign-in token and might throw an exception
-  Future<void> _reauthenticateAndDelete() async {
-    try {
-      final providerData = _auth.currentUser?.providerData.first;
+  Future<void> _reauthenticate(String? confirmedPassword) async {
+    final providerData = _auth.currentUser?.providerData.first;
 
-      if (AppleAuthProvider().providerId == providerData!.providerId) {
-        await _auth.currentUser!
-            .reauthenticateWithProvider(AppleAuthProvider());
-      } else if (GoogleAuthProvider().providerId == providerData.providerId) {
-        await _auth.currentUser!
-            .reauthenticateWithProvider(GoogleAuthProvider());
+    if (AppleAuthProvider.PROVIDER_ID == providerData!.providerId) {
+      await _auth.currentUser!.reauthenticateWithProvider(AppleAuthProvider());
+    } else if (GoogleAuthProvider.PROVIDER_ID == providerData.providerId) {
+      await _auth.currentUser!.reauthenticateWithProvider(GoogleAuthProvider());
+    } else if (EmailAuthProvider.PROVIDER_ID == providerData.providerId) {
+      User? user = _auth.currentUser;
+      if (user == null) return;
+      final credential = EmailAuthProvider.credential(
+          email: user.email!, password: confirmedPassword ?? '');
+      try {
+        await _auth.currentUser!.reauthenticateWithCredential(credential);
+      } on FirebaseAuthException catch (e) {
+        throw FirebaseAuthException(
+            code: e.code,
+            message: 'The current password you entered is incorrect.');
       }
-      await _auth.currentUser?.delete();
-    } catch (e) {
-      // Handle exceptions
     }
   }
 
@@ -143,7 +145,7 @@ class AuthService {
   bool hasPasswordProvider() {
     List<UserInfo> providers = _auth.currentUser!.providerData;
     for (UserInfo info in providers) {
-      if (info.providerId == 'password') return true;
+      if (info.providerId == EmailAuthProvider.PROVIDER_ID) return true;
     }
     return false;
   }
@@ -154,15 +156,7 @@ class AuthService {
     User? user = _auth.currentUser;
     if (user == null) return;
 
-    final credential = EmailAuthProvider.credential(
-        email: user.email!, password: currentPassword);
-    try {
-      await _auth.currentUser!.reauthenticateWithCredential(credential);
-    } on FirebaseAuthException catch (e) {
-      throw FirebaseAuthException(
-          code: e.code,
-          message: 'The current password you entered is incorrect.');
-    }
+    await _reauthenticate(currentPassword);
     try {
       await user.updatePassword(newPassword);
     } on FirebaseAuthException catch (e) {
