@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:nood_food/common/loader.dart';
 import 'package:nood_food/services/auth_service.dart';
-import 'package:nood_food/common/form_decoration.dart';
+import 'package:nood_food/common/form_utils.dart';
 
 class Register extends StatefulWidget {
   final Function toggleScreen;
@@ -17,19 +17,10 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   final _authService = AuthService();
-  final RegExp specialCharsRegex =
-      RegExp(r'[~`!@#\$%^&*()-_+=|}\]{\[":;?/>.<,]');
-  final RegExp numsRegex = RegExp(r'[0-9]');
   bool _isLoading = false;
   bool _hidePassword = true;
   String inputEmail = '';
   String inputPassword = '';
-
-  bool _validatePassword(String password) {
-    return password.length >= 6 &&
-        password.contains(numsRegex) &&
-        password.contains(specialCharsRegex);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +57,7 @@ class _RegisterState extends State<Register> {
                 const SizedBox(height: 5),
                 TextFormField(
                   validator: (password) {
-                    return password != null && _validatePassword(password)
+                    return password != null && validatePassword(password)
                         ? null
                         : 'Please enter a password with the following:\n6 characters, 1 number, and 1 special character';
                   },

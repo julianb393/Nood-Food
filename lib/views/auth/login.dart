@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:nood_food/common/loader.dart';
 import 'package:nood_food/services/auth_service.dart';
-import 'package:nood_food/common/form_decoration.dart';
+import 'package:nood_food/common/form_utils.dart';
 
 class Login extends StatefulWidget {
   final Function toggleScreen;

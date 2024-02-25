@@ -16,3 +16,12 @@ const InputDecoration formDecoration = InputDecoration(
     borderSide: BorderSide(color: Colors.red, width: 1.0),
   ),
 );
+
+final RegExp specialCharsRegex = RegExp(r'[~`!@#\$%^&*()-_+=|}\]{\[":;?/>.<,]');
+final RegExp numsRegex = RegExp(r'[0-9]');
+
+bool validatePassword(String password) {
+  return password.length >= 6 &&
+      password.contains(numsRegex) &&
+      password.contains(specialCharsRegex);
+}

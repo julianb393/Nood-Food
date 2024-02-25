@@ -138,4 +138,38 @@ class AuthService {
     await ref.putFile(image);
     return await ref.getDownloadURL();
   }
+
+  /// Checks if this user has an email/password provider.
+  bool hasPasswordProvider() {
+    List<UserInfo> providers = _auth.currentUser!.providerData;
+    for (UserInfo info in providers) {
+      if (info.providerId == 'password') return true;
+    }
+    return false;
+  }
+
+  Future<void> changePassword(
+      String currentPassword, String newPassword) async {
+    // Check if current password is correct
+    User? user = _auth.currentUser;
+    if (user == null) return;
+
+    final credential = EmailAuthProvider.credential(
+        email: user.email!, password: currentPassword);
+    try {
+      await _auth.currentUser!.reauthenticateWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      throw FirebaseAuthException(
+          code: e.code,
+          message: 'The current password you entered is incorrect.');
+    }
+    try {
+      await user.updatePassword(newPassword);
+    } on FirebaseAuthException catch (e) {
+      throw FirebaseAuthException(
+          code: e.code,
+          message:
+              'There was an issue changing your password. Please try again later.');
+    }
+  }
 }
