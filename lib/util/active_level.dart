@@ -13,4 +13,9 @@ enum ActiveLevel {
   const ActiveLevel(this.amrMultiplier, this.title);
   final double amrMultiplier;
   final String title;
+
+  static ActiveLevel? parseFromString(String? name) {
+    if (name == null) return null;
+    return ActiveLevel.values.firstWhere((level) => level.name == name);
+  }
 }

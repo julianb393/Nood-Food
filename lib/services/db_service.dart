@@ -4,6 +4,7 @@ import 'package:nood_food/models/food.dart';
 import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/models/nutritional_facts.dart';
 import 'package:nood_food/services/auth_service.dart';
+import 'package:nood_food/util/active_level.dart';
 import 'package:nood_food/util/meal_type.dart';
 
 class DBService {
@@ -55,8 +56,10 @@ class DBService {
     double? weight = data?['weight'];
     double? height = data?['height'];
     double? calorieLimit = data?['calorie_limit'];
+    ActiveLevel? activeLevel =
+        ActiveLevel.parseFromString(data?['active_level']);
 
-    user.updateUser(dob, sex, weight, height, calorieLimit);
+    user.updateUser(dob, sex, weight, height, calorieLimit, activeLevel);
     return user;
   }
 
@@ -124,13 +127,14 @@ class DBService {
   }
 
   Future<void> updateUserDetails(DateTime? dob, double? weight, String? sex,
-      double? height, double? calorieLimit) async {
+      double? height, double? calorieLimit, ActiveLevel? level) async {
     await _userCollection.doc(uid).set({
       'dob': dob == null ? null : _df.format(dob),
       'sex': sex,
       'weight': weight,
       'height': height,
       'calorie_limit': calorieLimit,
+      'active_level': level?.name
     }, SetOptions(merge: true));
   }
 }

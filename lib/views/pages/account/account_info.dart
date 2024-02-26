@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -52,12 +51,6 @@ class _AccountInfoState extends State<AccountInfo> {
       _calorieLimitRecommend = computeRecommendedCalories(
           _sex, _weight, _height, _age, _activeLevel);
     });
-    print(_calorieLimitRecommend);
-    print(_sex);
-    print(_weight);
-    print(_height);
-    print(_age);
-    print(_activeLevel?.title);
   }
 
   String? _numValidator(String? value) {
@@ -354,6 +347,7 @@ class _AccountInfoState extends State<AccountInfo> {
                       noChanges &= widget.user?.sex == _sex;
                       noChanges &= widget.user?.weight == _weight;
                       noChanges &= widget.user?.height == _height;
+                      noChanges &= widget.user?.activeLevel == _activeLevel;
                       noChanges &= widget.user?.calorieLimit == _calorieLimit;
                     }
 
@@ -366,6 +360,7 @@ class _AccountInfoState extends State<AccountInfo> {
                         _weight,
                         _height,
                         _calorieLimit,
+                        _activeLevel,
                         _selectedImage,
                       );
                     }

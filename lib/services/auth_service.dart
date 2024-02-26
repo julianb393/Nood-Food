@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/db_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:nood_food/util/active_level.dart';
 
 /// Authentication service layer for interacting with the backend in terms of
 /// authentication of users
@@ -84,12 +85,13 @@ class AuthService {
       double? weight,
       double? height,
       double? calorieLimit,
+      ActiveLevel? level,
       File? profilePic) async {
     await _auth.currentUser!.updateDisplayName(displayName);
     String? photoURL = await uploadFile(profilePic);
     await _auth.currentUser!.updatePhotoURL(photoURL);
     await DBService(uid: userUid)
-        .updateUserDetails(dob, weight, sex, height, calorieLimit);
+        .updateUserDetails(dob, weight, sex, height, calorieLimit, level);
   }
 
   /// Reauthenticates the user then deletes their account.
