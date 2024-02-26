@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,6 +9,8 @@ import 'package:nood_food/common/form_utils.dart';
 import 'package:nood_food/common/loader.dart';
 import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/auth_service.dart';
+import 'package:nood_food/util/active_level.dart';
+import 'package:nood_food/util/macronutrient.dart';
 import 'package:nood_food/util/string_extension.dart';
 
 class AccountInfo extends StatefulWidget {
@@ -37,8 +40,25 @@ class _AccountInfoState extends State<AccountInfo> {
   double? _weight;
   double? _height;
   double? _calorieLimit;
+  double? _calorieLimitRecommend;
+  final List<bool> _isSelectedLevels =
+      ActiveLevel.values.map((e) => false).toList();
+  ActiveLevel? _activeLevel;
 
   File? _selectedImage;
+
+  void _updateCalorieLimitRecommend() {
+    setState(() {
+      _calorieLimitRecommend = computeRecommendedCalories(
+          _sex, _weight, _height, _age, _activeLevel);
+    });
+    print(_calorieLimitRecommend);
+    print(_sex);
+    print(_weight);
+    print(_height);
+    print(_age);
+    print(_activeLevel?.title);
+  }
 
   String? _numValidator(String? value) {
     // field is optional, but if a value was actually inputted, check it.
@@ -96,6 +116,7 @@ class _AccountInfoState extends State<AccountInfo> {
 
   @override
   Widget build(BuildContext context) {
+    _updateCalorieLimitRecommend();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Account Information'),
@@ -199,7 +220,7 @@ class _AccountInfoState extends State<AccountInfo> {
                           decoration: formDecoration.copyWith(
                             labelText: 'Sex',
                           ),
-                          items: ['Male', 'Female', 'Other']
+                          items: ['Male', 'Female']
                               .map((sex) => DropdownMenuItem(
                                   value: sex, child: Text(sex)))
                               .toList(),
@@ -240,34 +261,19 @@ class _AccountInfoState extends State<AccountInfo> {
                   ),
                   const SizedBox(height: 10),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(
-                        child: TextFormField(
-                          initialValue: _calorieLimit == null
-                              ? ''
-                              : _calorieLimit.toString(),
-                          validator: _numValidator,
-                          onChanged: (val) {
-                            setState(() {
-                              _calorieLimit =
-                                  val.isEmpty ? null : double.parse(val);
-                            });
-                          },
-                          keyboardType: TextInputType.number,
-                          decoration: formDecoration.copyWith(
-                              labelText: 'Daily Calorie Limit (kcal)'),
-                        ),
-                      ),
+                      const Text('How active are you?'),
                       IconButton(
                         onPressed: () {
                           showDialog(
                               context: context,
                               builder: (builder) {
                                 return AlertDialog(
-                                  title: const Text('Daily Calorie Limit'),
+                                  title: const Text('Active Level'),
                                   icon: const Icon(Icons.question_mark),
-                                  content:
-                                      const Text('This is under development!'),
+                                  content: const Text(
+                                      'None: Little or no exercise.\nLight: Exercises 1-3 days per week.\nModerate: Exercises 3-5 days per week.\nA lot: Exercises 6-7 days per week.\nVery: Hard exercises 6-7 days per week.'),
                                   actions: [
                                     SizedBox(
                                       width: double.infinity,
@@ -283,7 +289,42 @@ class _AccountInfoState extends State<AccountInfo> {
                         icon: const Icon(Icons.question_mark),
                       )
                     ],
-                  )
+                  ),
+                  ToggleButtons(
+                    onPressed: (int index) {
+                      setState(() {
+                        for (int i = 0; i < _isSelectedLevels.length; i++) {
+                          _isSelectedLevels[i] = i == index;
+                          if (_isSelectedLevels[i]) {
+                            _activeLevel = ActiveLevel.values[i];
+                          }
+                        }
+                      });
+                    },
+                    isSelected: _isSelectedLevels,
+                    children: ActiveLevel.values
+                        .map((e) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: Text(e.title)))
+                        .toList(),
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    initialValue:
+                        _calorieLimit == null ? '' : _calorieLimit.toString(),
+                    validator: _numValidator,
+                    onChanged: (val) {
+                      setState(() {
+                        _calorieLimit = val.isEmpty ? null : double.parse(val);
+                      });
+                    },
+                    keyboardType: TextInputType.number,
+                    decoration: formDecoration.copyWith(
+                        labelText: 'Daily Calorie Limit (kcal)'),
+                  ),
+                  Text(_calorieLimitRecommend == null
+                      ? 'Complete the fields to compute the recommended amount.'
+                      : 'Recommended Daily Calorie Limit: ${_calorieLimitRecommend?.toStringAsFixed(2)}')
                 ],
               ),
             )
