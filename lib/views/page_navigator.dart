@@ -84,7 +84,10 @@ class _PageNavigatorState extends State<PageNavigator> {
   @override
   Widget build(BuildContext context) {
     if (_isNewUser) {
-      return AccountInfo(rebuildParentFunc: _rebuildNotNewUser);
+      return AccountInfo(
+        rebuildParentFunc: _rebuildNotNewUser,
+        user: _authService.currentUser,
+      );
     }
     return StreamProvider<List<Food>>.value(
       value: _dbService.getFoodsFromDate(_selectedDay),

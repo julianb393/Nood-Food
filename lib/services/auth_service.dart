@@ -40,8 +40,17 @@ class AuthService {
   /// new.
   bool get isNewUser {
     UserMetadata? metadata = _auth.currentUser?.metadata;
-    return metadata?.lastSignInTime == metadata?.creationTime &&
-        _auth.currentUser?.displayName == null;
+
+    if (metadata?.lastSignInTime == metadata?.creationTime) {
+      if (_auth.currentUser?.providerData.first.providerId ==
+          EmailAuthProvider.PROVIDER_ID) {
+        // Ensure display name was set.
+        return _auth.currentUser?.displayName == null;
+      }
+      // If it was Google or Apple, they provider display name by default.
+      return true;
+    }
+    return false;
   }
 
   Future<NFUser?> registerWithEmail(String email, String password) async {
@@ -88,8 +97,10 @@ class AuthService {
       ActiveLevel? level,
       File? profilePic) async {
     await _auth.currentUser!.updateDisplayName(displayName);
-    String? photoURL = await uploadFile(profilePic);
-    await _auth.currentUser!.updatePhotoURL(photoURL);
+    if (profilePic != null) {
+      String? photoURL = await uploadFile(profilePic);
+      await _auth.currentUser!.updatePhotoURL(photoURL);
+    }
     await DBService(uid: userUid)
         .updateUserDetails(dob, weight, sex, height, calorieLimit, level);
   }

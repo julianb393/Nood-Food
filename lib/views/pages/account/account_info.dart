@@ -97,7 +97,6 @@ class _AccountInfoState extends State<AccountInfo> {
     super.initState();
     // This means the page was opened via Settings.
     _fillInitialData = widget.rebuildParentFunc == null;
-    if (!_fillInitialData) return;
     _displayName = widget.user?.displayName ?? '';
     _dob = DateTime.tryParse(widget.user!.dob ?? '');
     _dobController.text = _dob != null ? _df.format(_dob!) : '';
@@ -343,8 +342,9 @@ class _AccountInfoState extends State<AccountInfo> {
                       noChanges &= widget.user!.displayName == _displayName;
                       noChanges &= _selectedImage == null;
                       noChanges &= widget.user?.dob ==
-                          (_dob != null ? _df.format(_dob!) : '');
+                          (_dob != null ? _df.format(_dob!) : null);
                       noChanges &= widget.user?.sex == _sex;
+
                       noChanges &= widget.user?.weight == _weight;
                       noChanges &= widget.user?.height == _height;
                       noChanges &= widget.user?.activeLevel == _activeLevel;
