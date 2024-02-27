@@ -137,4 +137,8 @@ class DBService {
       'active_level': level?.name
     }, SetOptions(merge: true));
   }
+
+  Future<void> deleteUserData() async {
+    await _userCollection.doc(uid).delete();
+  }
 }

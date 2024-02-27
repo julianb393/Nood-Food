@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nood_food/common/form_utils.dart';
 import 'package:nood_food/common/loader.dart';
 import 'package:nood_food/services/auth_service.dart';
+import 'package:nood_food/services/db_service.dart';
 
 class DeleteAccountDialog extends StatefulWidget {
   const DeleteAccountDialog({super.key});
@@ -62,12 +63,14 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
           : [
               ElevatedButton(
                   onPressed: () async {
-                    if (!_formKey.currentState!.validate()) return;
+                    if (!(_formKey.currentState?.validate() ?? true)) return;
 
                     setState(() => _isLoading = true);
                     try {
                       // If successfull, auth state will change and redirect to
                       // login page.
+                      await DBService(uid: AuthService().userUid)
+                          .deleteUserData();
                       await AuthService().deleteUserAccount(_confirmPassword);
                     } on FirebaseAuthException catch (e) {
                       if (mounted) {

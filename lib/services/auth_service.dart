@@ -40,8 +40,15 @@ class AuthService {
   /// new.
   bool get isNewUser {
     UserMetadata? metadata = _auth.currentUser?.metadata;
+    if (metadata?.lastSignInTime == null || metadata?.creationTime == null) {
+      return true;
+    }
+    int diffMs = metadata!.lastSignInTime!
+        .difference(metadata.creationTime!)
+        .inMilliseconds;
 
-    if (metadata?.lastSignInTime == metadata?.creationTime) {
+    // forgive 30 ms period.
+    if (diffMs.abs() <= 30) {
       if (_auth.currentUser?.providerData.first.providerId ==
           EmailAuthProvider.PROVIDER_ID) {
         // Ensure display name was set.
@@ -101,16 +108,21 @@ class AuthService {
       String? photoURL = await uploadFile(profilePic);
       await _auth.currentUser!.updatePhotoURL(photoURL);
     }
+
     await DBService(uid: userUid)
         .updateUserDetails(dob, weight, sex, height, calorieLimit, level);
   }
 
   /// Reauthenticates the user then deletes their account.
   Future<void> deleteUserAccount(String? confirmedPassword) async {
-    await _reauthenticate(confirmedPassword);
     try {
       await FirebaseAuth.instance.currentUser!.delete();
     } on FirebaseAuthException catch (e) {
+      if (e.code == "requires-recent-login") {
+        await _reauthenticate(confirmedPassword);
+        await FirebaseAuth.instance.currentUser!.delete();
+        return;
+      }
       throw FirebaseAuthException(
           code: e.code,
           message:
