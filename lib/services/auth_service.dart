@@ -40,7 +40,11 @@ class AuthService {
   /// On registration, user needs to indicate display name and other info.
   Future<void> _navigateToAccountInfo(BuildContext context) async {
     await Navigator.push(
-        context, MaterialPageRoute(builder: (builder) => const AccountInfo()));
+        context,
+        MaterialPageRoute(
+            builder: (builder) => AccountInfo(
+                  user: _parseUserFromFirebaseUser(_auth.currentUser),
+                )));
   }
 
   Future<void> registerWithEmail(
@@ -123,19 +127,35 @@ class AuthService {
 
   /// Reauthenticates the user then deletes their account.
   Future<void> deleteUserAccount(String? confirmedPassword) async {
-    try {
-      await FirebaseAuth.instance.currentUser!.delete();
-    } on FirebaseAuthException catch (e) {
-      if (e.code == "requires-recent-login") {
+    List<String> providers =
+        _auth.currentUser?.providerData.map((e) => e.providerId).toList() ?? [];
+    await FirebaseAuth.instance.currentUser!
+        .delete()
+        .onError((FirebaseAuthException error, stackTrace) async {
+      if (error.code == "requires-recent-login") {
         await _reauthenticate(confirmedPassword);
-        await FirebaseAuth.instance.currentUser!.delete();
+        await FirebaseAuth.instance.currentUser!.delete().then((value) async {
+          if (providers.contains(GoogleAuthProvider.PROVIDER_ID)) {
+            await GoogleSignIn().signOut();
+          }
+          if (providers.contains(AppleAuthProvider.PROVIDER_ID)) {
+            // TODO
+          }
+        });
         return;
       }
       throw FirebaseAuthException(
-          code: e.code,
+          code: error.code,
           message:
               'Something went wrong when attempting to delete your account. Please try again later.');
-    }
+    }).then((value) async {
+      if (providers.contains(GoogleAuthProvider.PROVIDER_ID)) {
+        await GoogleSignIn().signOut();
+      }
+      if (providers.contains(AppleAuthProvider.PROVIDER_ID)) {
+        // TODO
+      }
+    });
   }
 
   /// Since this is a security-sensitive operation, Firebase needs a relatively
