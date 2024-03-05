@@ -112,6 +112,36 @@ class _FoodEditorState extends State<FoodEditor> {
     });
   }
 
+  Future<void> _scanBarcodeAndFill() async {
+    Map<String, dynamic>? scannedData = await scanBarcode();
+    if (scannedData == null || scannedData.isEmpty) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.redAccent,
+            content: Text('Unable to recognize that barcode.'),
+          ),
+        );
+      } else {
+        print('Unable to recognize that barcode.');
+      }
+      return;
+    }
+    setState(() {
+      _nameController.text = scannedData['name'];
+      _newFood.name = _nameController.text;
+      _amountController.text = scannedData['amount'];
+      _nutrition.amount = double.parse(_amountController.text);
+      _proteinController.text = scannedData['protein'];
+      _nutrition.protein = double.parse(_proteinController.text);
+      _carbsController.text = scannedData['carbs'];
+      _nutrition.carbs = double.parse(_carbsController.text);
+      _fatController.text = scannedData['fat'];
+      _nutrition.fat = double.parse(_fatController.text);
+      _updateSummary();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,11 +151,21 @@ class _FoodEditorState extends State<FoodEditor> {
           children: [
             const Text('Food Editor'),
             _isNewEntry
-                ? IconButton(
-                    onPressed: () {
-                      _showFoodSeach();
-                    },
-                    icon: const Icon(Icons.search),
+                ? Row(
+                    children: [
+                      IconButton(
+                        onPressed: () async {
+                          await _scanBarcodeAndFill();
+                        },
+                        icon: const Icon(Icons.barcode_reader),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          _showFoodSeach();
+                        },
+                        icon: const Icon(Icons.search),
+                      ),
+                    ],
                   )
                 : IconButton(
                     onPressed: () async {
@@ -268,44 +308,6 @@ class _FoodEditorState extends State<FoodEditor> {
                             ),
                           ),
                         ],
-                      ),
-                      const SizedBox(height: 5),
-                      ElevatedButton(
-                        onPressed: () async {
-                          Map<String, dynamic>? scannedData =
-                              await scanBarcode();
-                          if (scannedData == null || scannedData.isEmpty) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  backgroundColor: Colors.redAccent,
-                                  content:
-                                      Text('Unable to recognize that barcode.'),
-                                ),
-                              );
-                            } else {
-                              print('Unable to recognize that barcode.');
-                            }
-                            return;
-                          }
-                          setState(() {
-                            _nameController.text = scannedData['name'];
-                            _newFood.name = _nameController.text;
-                            _amountController.text = scannedData['amount'];
-                            _nutrition.amount =
-                                double.parse(_amountController.text);
-                            _proteinController.text = scannedData['protein'];
-                            _nutrition.protein =
-                                double.parse(_proteinController.text);
-                            _carbsController.text = scannedData['carbs'];
-                            _nutrition.carbs =
-                                double.parse(_carbsController.text);
-                            _fatController.text = scannedData['fat'];
-                            _nutrition.fat = double.parse(_fatController.text);
-                            _updateSummary();
-                          });
-                        },
-                        child: const Text('Scan barcode to fill'),
                       ),
                       const Row(
                         children: [
