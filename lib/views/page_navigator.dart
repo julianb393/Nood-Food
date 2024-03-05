@@ -12,8 +12,7 @@ import 'package:nood_food/views/pages/meals/meals.dart';
 import 'package:provider/provider.dart';
 
 class PageNavigator extends StatefulWidget {
-  final bool isNewUser;
-  const PageNavigator({super.key, required this.isNewUser});
+  const PageNavigator({super.key});
 
   @override
   State<PageNavigator> createState() => _PageNavigatorState();
@@ -22,7 +21,6 @@ class PageNavigator extends StatefulWidget {
 class _PageNavigatorState extends State<PageNavigator> {
   late final AuthService _authService;
   late final DBService _dbService;
-  late bool _isNewUser;
   double dailyCaloriesAllowed = 3200.0;
   DateTime _selectedDay = DateTime.now();
   Widget _accountIcon = const Icon(Icons.person_outlined);
@@ -30,11 +28,6 @@ class _PageNavigatorState extends State<PageNavigator> {
 
   int _selectedPageIndex = 0;
   final List<String> _pageTitles = ['Nood Food', 'Meals', 'Account'];
-
-  // Will allow the child Account Info widget to rebuild.
-  void _rebuildNotNewUser() {
-    setState(() => _isNewUser = false);
-  }
 
   // Will allow the home to control the date, which can get shared with others.
   void _updateSelectedDate(DateTime newDate) {
@@ -78,17 +71,10 @@ class _PageNavigatorState extends State<PageNavigator> {
     super.initState();
     _authService = AuthService();
     _dbService = DBService(uid: _authService.userUid);
-    _isNewUser = widget.isNewUser;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isNewUser) {
-      return AccountInfo(
-        rebuildParentFunc: _rebuildNotNewUser,
-        user: _authService.currentUser,
-      );
-    }
     return StreamProvider<List<Food>>.value(
       value: _dbService.getFoodsFromDate(_selectedDay),
       initialData: const [],

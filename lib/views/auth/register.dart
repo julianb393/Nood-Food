@@ -97,7 +97,7 @@ class _RegisterState extends State<Register> {
                           String errMsg;
                           try {
                             await _authService.registerWithEmail(
-                                inputEmail, inputPassword);
+                                inputEmail, inputPassword, context);
                             return;
                           } on FirebaseAuthException catch (error) {
                             // credentiala issue
@@ -134,7 +134,7 @@ class _RegisterState extends State<Register> {
             Buttons.Google,
             onPressed: () async {
               setState(() => _isLoading = true);
-              await _authService.logInWithGoogle();
+              await _authService.logInWithGoogle(context);
               setState(() => _isLoading = false);
             },
           ),

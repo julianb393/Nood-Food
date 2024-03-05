@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/db_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:nood_food/util/active_level.dart';
+import 'package:nood_food/views/pages/account/account_info.dart';
 
 /// Authentication service layer for interacting with the backend in terms of
 /// authentication of users
@@ -35,46 +37,35 @@ class AuthService {
     return _parseUserFromFirebaseUser(_auth.currentUser);
   }
 
-  /// If the last sign in is the same as when the account was created and they
-  /// did not set the displayname (which is a required field), then the user is
-  /// new.
-  bool get isNewUser {
-    UserMetadata? metadata = _auth.currentUser?.metadata;
-    if (metadata?.lastSignInTime == null || metadata?.creationTime == null) {
-      return true;
-    }
-    int diffMs = metadata!.lastSignInTime!
-        .difference(metadata.creationTime!)
-        .inMilliseconds;
+  /// On registration, user needs to indicate display name and other info.
+  Future<void> _navigateToAccountInfo(BuildContext context) async {
+    await Navigator.push(
+        context, MaterialPageRoute(builder: (builder) => const AccountInfo()));
+  }
 
-    // forgive 30 ms period.
-    if (diffMs.abs() <= 30) {
-      if (_auth.currentUser?.providerData.first.providerId ==
-          EmailAuthProvider.PROVIDER_ID) {
-        // Ensure display name was set.
-        return _auth.currentUser?.displayName == null;
+  Future<void> registerWithEmail(
+      String email, String password, BuildContext context) async {
+    await _auth
+        .createUserWithEmailAndPassword(email: email, password: password)
+        .then((cred) async {
+      await _navigateToAccountInfo(context);
+    });
+  }
+
+  Future<void> loginWithEmail(
+      String email, String password, BuildContext context) async {
+    await _auth
+        .signInWithEmailAndPassword(email: email, password: password)
+        .then((value) async {
+      // Safe guard incase user did not complete setting up their acacount
+      // before closing the application
+      if (_auth.currentUser?.displayName == null) {
+        await _navigateToAccountInfo(context);
       }
-      // If it was Google or Apple, they provider display name by default.
-      return true;
-    }
-    return false;
+    });
   }
 
-  Future<NFUser?> registerWithEmail(String email, String password) async {
-    UserCredential? cred;
-    cred = await _auth.createUserWithEmailAndPassword(
-        email: email, password: password);
-
-    return _parseUserFromFirebaseUser(cred.user);
-  }
-
-  Future<NFUser?> loginWithEmail(String email, String password) async {
-    UserCredential? cred = await _auth.signInWithEmailAndPassword(
-        email: email, password: password);
-    return _parseUserFromFirebaseUser(cred.user);
-  }
-
-  Future<NFUser?> logInWithGoogle() async {
+  Future<void> logInWithGoogle(BuildContext context) async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     // Obtain the auth details from the request
@@ -85,13 +76,28 @@ class AuthService {
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
-    UserCredential cred =
-        await FirebaseAuth.instance.signInWithCredential(credential);
-    return _parseUserFromFirebaseUser(cred.user);
+    await FirebaseAuth.instance
+        .signInWithCredential(credential)
+        .then((cred) async {
+      // Make the user
+      if (cred.additionalUserInfo!.isNewUser && context.mounted) {
+        await _navigateToAccountInfo(context);
+      }
+      return cred;
+    });
   }
 
   Future<void> logout() async {
-    await _auth.signOut();
+    List<String> providers =
+        _auth.currentUser?.providerData.map((e) => e.providerId).toList() ?? [];
+    await _auth.signOut().then((value) async {
+      if (providers.contains(GoogleAuthProvider.PROVIDER_ID)) {
+        await GoogleSignIn().signOut();
+      }
+      if (providers.contains(AppleAuthProvider.PROVIDER_ID)) {
+        // TODO
+      }
+    });
   }
 
   Future<void> updateAccountInfo(

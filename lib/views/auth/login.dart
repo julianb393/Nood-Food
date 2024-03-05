@@ -93,7 +93,7 @@ class _LoginState extends State<Login> {
                           String errMsg;
                           try {
                             await _authService.loginWithEmail(
-                                inputEmail, inputPassword);
+                                inputEmail, inputPassword, context);
                             return;
                           } on FirebaseAuthException catch (error) {
                             // credentiala issue
@@ -132,7 +132,7 @@ class _LoginState extends State<Login> {
                   Buttons.Google,
                   onPressed: () async {
                     setState(() => _googleIsLoading = true);
-                    await _authService.logInWithGoogle();
+                    await _authService.logInWithGoogle(context);
                     setState(() => _googleIsLoading = false);
                   },
                 ),
