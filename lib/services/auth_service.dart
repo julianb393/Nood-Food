@@ -49,6 +49,7 @@ class AuthService {
         .createUserWithEmailAndPassword(email: email, password: password)
         .then((cred) async {
       await _navigateToAccountInfo(context);
+      return cred;
     });
   }
 
@@ -56,12 +57,13 @@ class AuthService {
       String email, String password, BuildContext context) async {
     await _auth
         .signInWithEmailAndPassword(email: email, password: password)
-        .then((value) async {
+        .then((cred) async {
       // Safe guard incase user did not complete setting up their acacount
       // before closing the application
       if (_auth.currentUser?.displayName == null) {
         await _navigateToAccountInfo(context);
       }
+      return cred;
     });
   }
 

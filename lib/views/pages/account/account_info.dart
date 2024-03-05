@@ -13,9 +13,8 @@ import 'package:nood_food/util/macronutrient.dart';
 import 'package:nood_food/util/string_extension.dart';
 
 class AccountInfo extends StatefulWidget {
-  final Function? rebuildParentFunc;
   final NFUser? user;
-  const AccountInfo({super.key, this.rebuildParentFunc, this.user});
+  const AccountInfo({super.key, this.user});
 
   @override
   State<AccountInfo> createState() => _AccountInfoState();
@@ -26,7 +25,6 @@ class _AccountInfoState extends State<AccountInfo> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   final DateFormat _df = DateFormat('yyyy-MM-dd');
   final TextEditingController _dobController = TextEditingController();
-  late final bool _fillInitialData;
   int? _age;
   bool _isLoading = false;
 
@@ -96,9 +94,8 @@ class _AccountInfoState extends State<AccountInfo> {
   void initState() {
     super.initState();
     // This means the page was opened via Settings.
-    _fillInitialData = widget.rebuildParentFunc == null;
     _displayName = widget.user?.displayName ?? '';
-    _dob = DateTime.tryParse(widget.user!.dob ?? '');
+    _dob = DateTime.tryParse(widget.user?.dob ?? '');
     _dobController.text = _dob != null ? _df.format(_dob!) : '';
     _sex = widget.user?.sex;
     _weight = widget.user?.weight;
@@ -112,7 +109,7 @@ class _AccountInfoState extends State<AccountInfo> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Account Information'),
-        automaticallyImplyLeading: _fillInitialData,
+        automaticallyImplyLeading: widget.user != null,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -366,21 +363,12 @@ class _AccountInfoState extends State<AccountInfo> {
                     }
                     setState(() => _isLoading = false);
 
-                    // In the case of a new user, we directly built this widget
-                    // on the main widget tree. So this function should rebuild
-                    // the parent and tell it that this user is no longer new.
-                    if (widget.rebuildParentFunc != null) {
-                      widget.rebuildParentFunc!();
-                      return;
-                    }
                     // Otherwise, it was navigated to and we can just pop it.
-                    else if (mounted) {
-                      Navigator.pop(context);
-                    }
+                    if (mounted) Navigator.pop(context);
                   },
             child: _isLoading
                 ? const Loader()
-                : Text(_fillInitialData ? 'Save Changes' : 'Continue'),
+                : Text(widget.user == null ? 'Save Changes' : 'Continue'),
           )),
     );
   }
