@@ -6,7 +6,6 @@ import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/services/db_service.dart';
 import 'package:nood_food/views/pages/account/account.dart';
-import 'package:nood_food/views/pages/account/account_info.dart';
 import 'package:nood_food/views/pages/home.dart';
 import 'package:nood_food/views/pages/meals/meals.dart';
 import 'package:provider/provider.dart';
