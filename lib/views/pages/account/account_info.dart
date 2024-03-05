@@ -97,10 +97,16 @@ class _AccountInfoState extends State<AccountInfo> {
     _displayName = widget.user?.displayName ?? '';
     _dob = DateTime.tryParse(widget.user?.dob ?? '');
     _dobController.text = _dob != null ? _df.format(_dob!) : '';
+    _age =
+        _dob != null ? (DateTime.now().difference(_dob!).inDays ~/ 365) : null;
     _sex = widget.user?.sex;
     _weight = widget.user?.weight;
     _height = widget.user?.height;
     _calorieLimit = widget.user?.calorieLimit;
+    _activeLevel = widget.user?.activeLevel;
+    int? selectedIndex =
+        _activeLevel != null ? ActiveLevel.values.indexOf(_activeLevel!) : -1;
+    if (selectedIndex != -1) _isSelectedLevels[selectedIndex] = true;
   }
 
   @override
