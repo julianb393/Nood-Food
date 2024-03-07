@@ -50,7 +50,7 @@ class MealSummaryTable extends StatelessWidget {
                 cells: [
                   DataCell(Text(food.name, softWrap: true)),
                   DataCell(Text(
-                      '${food.consumedAmount.toString()} ${food.consumedUom}')),
+                      '${food.consumedAmount.toString()} ${food.consumedUom.symbol}')),
                   DataCell(Text(computeTotalCaloriesFromFood(food).toString())),
                 ],
               ))

@@ -1,5 +1,6 @@
 import 'package:nood_food/models/nutritional_facts.dart';
 import 'package:nood_food/util/meal_type.dart';
+import 'package:nood_food/util/unit.dart';
 
 /// Class that models a Food whose [quantity] is measured in [quantityUom].
 class Food {
@@ -7,7 +8,7 @@ class Food {
   String? uid;
   String name;
   double consumedAmount;
-  String consumedUom;
+  Unit consumedUom;
   NutritionalFacts nutrition;
   MealType meal;
   Food({
@@ -23,7 +24,8 @@ class Food {
     if (nutrition.amount == 0) {
       return 0.0;
     }
-    return double.parse((nutrition.protein / nutrition.amount * consumedAmount)
+    double amountInGrams = convertToGrams(consumedUom, consumedAmount);
+    return double.parse((nutrition.protein / nutrition.amount * amountInGrams)
         .toStringAsFixed(2));
   }
 
@@ -31,7 +33,8 @@ class Food {
     if (nutrition.amount == 0) {
       return 0.0;
     }
-    return double.parse((nutrition.carbs / nutrition.amount * consumedAmount)
+    double amountInGrams = convertToGrams(consumedUom, consumedAmount);
+    return double.parse((nutrition.carbs / nutrition.amount * amountInGrams)
         .toStringAsFixed(2));
   }
 
@@ -39,8 +42,9 @@ class Food {
     if (nutrition.amount == 0) {
       return 0.0;
     }
+    double amountInGrams = convertToGrams(consumedUom, consumedAmount);
     return double.parse(
-        (nutrition.fat / nutrition.amount * consumedAmount).toStringAsFixed(2));
+        (nutrition.fat / nutrition.amount * amountInGrams).toStringAsFixed(2));
   }
 
   Map<String, dynamic> toJson() {

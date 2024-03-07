@@ -6,6 +6,7 @@ import 'package:nood_food/models/nutritional_facts.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/util/active_level.dart';
 import 'package:nood_food/util/meal_type.dart';
+import 'package:nood_food/util/unit.dart';
 
 class DBService {
   final String? uid;
@@ -30,7 +31,7 @@ class DBService {
       uid: doc.id,
       name: doc.get('name'),
       consumedAmount: doc.get('consumed_amount'),
-      consumedUom: doc.get('consumed_uom'),
+      consumedUom: parseUnitFromSymbol(doc.get('consumed_uom')),
       nutrition: _parseNutritionFromDocMap(doc.get('nutritional_facts')),
       meal: MealTypeExtension.parseString(doc.get('meal')),
     );
@@ -98,7 +99,7 @@ class DBService {
     await _userCollection.doc(uid).collection(_df.format(date)).doc().set({
       'name': food.name.toUpperCase(),
       'consumed_amount': food.consumedAmount,
-      'consumed_uom': food.consumedUom,
+      'consumed_uom': food.consumedUom.symbol,
       'nutritional_facts': food.nutrition.toJson(),
       'meal': food.meal.name
     });
@@ -112,7 +113,7 @@ class DBService {
         .update({
       'name': food.name.toUpperCase(),
       'consumed_amount': food.consumedAmount,
-      'consumed_uom': food.consumedUom,
+      'consumed_uom': food.consumedUom.symbol,
       'nutritional_facts': food.nutrition.toJson(),
       'meal': food.meal.name
     });

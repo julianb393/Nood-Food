@@ -9,6 +9,7 @@ import 'package:nood_food/util/barcode_scan.dart';
 import 'package:nood_food/util/macronutrient.dart';
 import 'package:nood_food/util/meal_type.dart';
 import 'package:nood_food/util/string_extension.dart';
+import 'package:nood_food/util/unit.dart';
 import 'package:nood_food/views/pages/meals/food_search.dart';
 
 class FoodEditor extends StatefulWidget {
@@ -58,7 +59,7 @@ class _FoodEditorState extends State<FoodEditor> {
       _newFood = Food(
           name: '',
           consumedAmount: 0.0,
-          consumedUom: 'g',
+          consumedUom: Unit.grams,
           nutrition: _nutrition,
           meal: widget.mealType);
     } else {
@@ -75,7 +76,7 @@ class _FoodEditorState extends State<FoodEditor> {
     }
   }
 
-  // Consumed summary fields
+  // Consumed summary fields in grams
   double _proteinConsumed = 0.0;
   double _carbsConsumed = 0.0;
   double _fatConsumed = 0.0;
@@ -348,13 +349,15 @@ class _FoodEditorState extends State<FoodEditor> {
                           Flexible(
                             child: DropdownButtonFormField(
                               decoration: formDecoration,
-                              value: 'g',
-                              items: ['g']
-                                  .map((uom) => DropdownMenuItem(
-                                      value: uom, child: Text(uom)))
+                              value: Unit.grams,
+                              items: Unit.values
+                                  .map((unit) => DropdownMenuItem(
+                                      value: unit, child: Text(unit.symbol)))
                                   .toList(),
-                              onChanged: (uom) =>
-                                  _newFood.consumedUom = uom ?? 'g',
+                              onChanged: (unit) => setState(() {
+                                _newFood.consumedUom = unit as Unit;
+                                _updateSummary();
+                              }),
                             ),
                           )
                         ],
