@@ -401,7 +401,7 @@ class _AccountInfoState extends State<AccountInfo> {
                       setState(() => _isLoading = false);
 
                       // Otherwise, it was navigated to and we can just pop it.
-                      if (mounted) Navigator.pop(context);
+                      if (context.mounted) Navigator.pop(context);
                     },
               child: _isLoading ? const Loader() : const Text('Save'),
             )),

@@ -12,7 +12,7 @@ class ChangePassword extends StatefulWidget {
 }
 
 class _ChangePasswordState extends State<ChangePassword> {
-  AuthService _authService = AuthService();
+  final AuthService _authService = AuthService();
   final _formKey = GlobalKey<FormState>();
   String _currentPassword = '';
   String _newPassword = '';
