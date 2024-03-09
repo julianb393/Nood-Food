@@ -54,12 +54,12 @@ class _PageNavigatorState extends State<PageNavigator> {
           );
           _accountIcon = CircleAvatar(
             backgroundColor: Colors.transparent,
-            radius: 25,
+            radius: 20,
             child: profilePic,
           );
           _accountIconActive = CircleAvatar(
             backgroundColor: Colors.greenAccent,
-            radius: 25,
+            radius: 20,
             child: profilePic,
           );
         }));
@@ -82,7 +82,7 @@ class _PageNavigatorState extends State<PageNavigator> {
         bottomNavigationBar: BottomNavigationBar(
           showSelectedLabels: false,
           showUnselectedLabels: false,
-          iconSize: 35,
+          iconSize: 25,
           items: <BottomNavigationBarItem>[
             const BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
