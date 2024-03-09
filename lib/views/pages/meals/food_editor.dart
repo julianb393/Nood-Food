@@ -228,7 +228,7 @@ class _FoodEditorState extends State<FoodEditor> {
                               }),
                               keyboardType: TextInputType.number,
                               decoration: formDecoration.copyWith(
-                                  labelText: 'Amount (g)'),
+                                  labelText: 'Serving amount (g)'),
                             ),
                           ),
                           const Expanded(flex: 1, child: SizedBox())
