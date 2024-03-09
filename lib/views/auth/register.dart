@@ -136,7 +136,6 @@ class _RegisterState extends State<Register> {
             children: [
               GoogleAuthButton(
                 onPressed: () async {
-                  // your implementation
                   setState(() => _isLoading = true);
                   await _authService.logInWithGoogle(context);
                   setState(() => _isLoading = true);
@@ -150,9 +149,13 @@ class _RegisterState extends State<Register> {
               ),
               const SizedBox(width: 10),
               AppleAuthButton(
-                onPressed: () {},
+                onPressed: () async {
+                  setState(() => _isLoading = true);
+                  await _authService.logInWithApple(context);
+                  setState(() => _isLoading = true);
+                },
                 themeMode: ThemeMode.dark,
-                isLoading: false,
+                isLoading: _isLoading,
                 style: const AuthButtonStyle(
                   buttonType: AuthButtonType.icon,
                   iconType: AuthIconType.outlined,

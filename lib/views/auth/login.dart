@@ -146,9 +146,13 @@ class _LoginState extends State<Login> {
               ),
               const SizedBox(width: 10),
               AppleAuthButton(
-                onPressed: () {},
+                onPressed: () async {
+                  setState(() => _googleIsLoading = true);
+                  await _authService.logInWithApple(context);
+                  setState(() => _googleIsLoading = true);
+                },
                 themeMode: ThemeMode.dark,
-                isLoading: false,
+                isLoading: _googleIsLoading,
                 style: const AuthButtonStyle(
                   buttonType: AuthButtonType.icon,
                   iconType: AuthIconType.outlined,

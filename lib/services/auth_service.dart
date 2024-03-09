@@ -8,6 +8,7 @@ import 'package:nood_food/services/db_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:nood_food/util/active_level.dart';
 import 'package:nood_food/views/pages/account/account_info.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 /// Authentication service layer for interacting with the backend in terms of
 /// authentication of users
@@ -91,6 +92,10 @@ class AuthService {
       }
       return cred;
     });
+  }
+
+  Future<void> logInWithApple(BuildContext context) async {
+    // TODO
   }
 
   Future<void> logout() async {
