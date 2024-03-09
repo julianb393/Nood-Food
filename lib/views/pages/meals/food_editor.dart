@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nood_food/common/div_text.dart';
 import 'package:nood_food/common/form_utils.dart';
 import 'package:nood_food/common/loader.dart';
 import 'package:nood_food/models/food.dart';
@@ -204,16 +205,7 @@ class _FoodEditorState extends State<FoodEditor> {
                         onChanged: (val) => setState(() => _newFood.name = val),
                         decoration: formDecoration.copyWith(labelText: 'Name'),
                       ),
-                      const Row(
-                        children: [
-                          Expanded(child: Divider()),
-                          Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text('Nutritional Facts'),
-                          ),
-                          Expanded(child: Divider()),
-                        ],
-                      ),
+                      const DivText(text: 'Nutritional Facts'),
                       const SizedBox(height: 5),
                       Row(
                         children: [
@@ -310,16 +302,7 @@ class _FoodEditorState extends State<FoodEditor> {
                           ),
                         ],
                       ),
-                      const Row(
-                        children: [
-                          Expanded(child: Divider()),
-                          Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text('Consumption Summary'),
-                          ),
-                          Expanded(child: Divider()),
-                        ],
-                      ),
+                      const DivText(text: 'Consumption Summary'),
                       // const SizedBox(height: 5),
                       Row(
                         mainAxisSize: MainAxisSize.min,

@@ -1,7 +1,8 @@
+import 'package:auth_buttons/auth_buttons.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:nood_food/common/div_text.dart';
 import 'package:nood_food/common/loader.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/common/form_utils.dart';
@@ -129,18 +130,35 @@ class _RegisterState extends State<Register> {
               ],
             ),
           ),
-          const Divider(color: Colors.grey),
-          SignInButton(
-            Buttons.Google,
-            onPressed: () async {
-              setState(() => _isLoading = true);
-              await _authService.logInWithGoogle(context);
-              setState(() => _isLoading = false);
-            },
-          ),
-          SignInButton(
-            Buttons.Apple,
-            onPressed: () {},
+          const DivText(text: 'Or continue with'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GoogleAuthButton(
+                onPressed: () async {
+                  // your implementation
+                  setState(() => _isLoading = true);
+                  await _authService.logInWithGoogle(context);
+                  setState(() => _isLoading = true);
+                },
+                themeMode: ThemeMode.dark,
+                isLoading: _isLoading,
+                style: const AuthButtonStyle(
+                  buttonType: AuthButtonType.icon,
+                  iconType: AuthIconType.outlined,
+                ),
+              ),
+              const SizedBox(width: 10),
+              AppleAuthButton(
+                onPressed: () {},
+                themeMode: ThemeMode.dark,
+                isLoading: false,
+                style: const AuthButtonStyle(
+                  buttonType: AuthButtonType.icon,
+                  iconType: AuthIconType.outlined,
+                ),
+              ),
+            ],
           ),
           Align(
             alignment: Alignment.bottomRight,
