@@ -105,9 +105,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                               try {
                                 await _authService.changePassword(
                                     _currentPassword, _newPassword);
-                                if (mounted) Navigator.pop(context);
+                                if (context.mounted) Navigator.pop(context);
                               } on FirebaseAuthException catch (e) {
-                                if (mounted) {
+                                if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       backgroundColor: Colors.redAccent,

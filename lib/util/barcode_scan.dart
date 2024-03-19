@@ -9,7 +9,6 @@ Future<Map<String, String>?> scanBarcode() async {
     barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
         '#ff6666', 'Cancel', true, ScanMode.QR);
   } on PlatformException {
-    print('Failed to get platform version.');
     return null;
   }
 

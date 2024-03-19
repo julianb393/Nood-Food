@@ -80,10 +80,7 @@ class _LoginState extends State<Login> {
                   onPressed: _emailIsLoading || _googleIsLoading
                       ? null
                       : () async {
-                          if (!_formKey.currentState!.validate()) {
-                            print('Form is invalid');
-                            return;
-                          }
+                          if (!_formKey.currentState!.validate()) return;
 
                           setState(() {
                             _emailIsLoading = true;
@@ -96,15 +93,13 @@ class _LoginState extends State<Login> {
                             await _authService.loginWithEmail(
                                 inputEmail, inputPassword, context);
                             return;
-                          } on FirebaseAuthException catch (error) {
+                          } on FirebaseAuthException {
                             // credentiala issue
                             errMsg = 'Invalid email or password.';
-                            print(error);
                           } catch (error) {
                             // server issue
-                            errMsg = 'We\'re having issues connecting to' +
-                                ' our server. Please try again later...';
-                            print(error);
+                            errMsg =
+                                'We\'re having issues connecting to our server. Please try again later...';
                           }
 
                           setState(() {
@@ -145,19 +140,20 @@ class _LoginState extends State<Login> {
                 ),
               ),
               const SizedBox(width: 10),
-              AppleAuthButton(
-                onPressed: () async {
-                  setState(() => _googleIsLoading = true);
-                  await _authService.logInWithApple(context);
-                  setState(() => _googleIsLoading = true);
-                },
-                themeMode: ThemeMode.dark,
-                isLoading: _googleIsLoading,
-                style: const AuthButtonStyle(
-                  buttonType: AuthButtonType.icon,
-                  iconType: AuthIconType.outlined,
-                ),
-              ),
+              // TODO: Apple authentication
+              // AppleAuthButton(
+              //   onPressed: () async {
+              //     setState(() => _googleIsLoading = true);
+              //     await _authService.logInWithApple(context);
+              //     setState(() => _googleIsLoading = true);
+              //   },
+              //   themeMode: ThemeMode.dark,
+              //   isLoading: _googleIsLoading,
+              //   style: const AuthButtonStyle(
+              //     buttonType: AuthButtonType.icon,
+              //     iconType: AuthIconType.outlined,
+              //   ),
+              // ),
             ],
           ),
           Align(

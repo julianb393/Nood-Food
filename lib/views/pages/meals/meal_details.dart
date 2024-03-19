@@ -40,11 +40,11 @@ class MealDetails extends StatelessWidget {
     double totalCarbs = 0.0;
     double totalFat = 0.0;
 
-    foods.forEach((food) {
+    for (var food in foods) {
       totalProtein += food.computeConsumedProtein();
       totalCarbs += food.computeConsumedCarbs();
       totalFat += food.computeConsumedFat();
-    });
+    }
 
     return Scaffold(
       body: Padding(

@@ -93,19 +93,12 @@ class AuthService {
     });
   }
 
-  Future<void> logInWithApple(BuildContext context) async {
-    // TODO
-  }
-
   Future<void> logout() async {
     List<String> providers =
         _auth.currentUser?.providerData.map((e) => e.providerId).toList() ?? [];
     await _auth.signOut().then((value) async {
       if (providers.contains(GoogleAuthProvider.PROVIDER_ID)) {
         await GoogleSignIn().signOut();
-      }
-      if (providers.contains(AppleAuthProvider.PROVIDER_ID)) {
-        // TODO
       }
     });
   }
@@ -142,9 +135,6 @@ class AuthService {
           if (providers.contains(GoogleAuthProvider.PROVIDER_ID)) {
             await GoogleSignIn().signOut();
           }
-          if (providers.contains(AppleAuthProvider.PROVIDER_ID)) {
-            // TODO
-          }
         });
         return;
       }
@@ -155,9 +145,6 @@ class AuthService {
     }).then((value) async {
       if (providers.contains(GoogleAuthProvider.PROVIDER_ID)) {
         await GoogleSignIn().signOut();
-      }
-      if (providers.contains(AppleAuthProvider.PROVIDER_ID)) {
-        // TODO
       }
     });
   }

@@ -1,4 +1,3 @@
-import 'package:nood_food/models/food.dart';
 
 class SearchFood {
   String name;

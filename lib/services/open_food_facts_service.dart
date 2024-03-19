@@ -66,7 +66,6 @@ Map<String, String> _parseSearchResults(Map<String, dynamic> product) {
       fatUnit == null) {
     return {};
   }
-  print('returning food $name');
   return {
     'name': name,
     'protein':

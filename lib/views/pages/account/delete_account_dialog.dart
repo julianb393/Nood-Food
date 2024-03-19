@@ -73,7 +73,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                           .deleteUserData();
                       await AuthService().deleteUserAccount(_confirmPassword);
                     } on FirebaseAuthException catch (e) {
-                      if (mounted) {
+                      if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             backgroundColor: Colors.redAccent,
@@ -86,7 +86,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                       return;
                     }
                     setState(() => _isLoading = false);
-                    if (mounted) Navigator.pop(context);
+                    if (context.mounted) Navigator.pop(context);
                   },
                   child: const Text('Yes, Delete it!')),
               ElevatedButton(

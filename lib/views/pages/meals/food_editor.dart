@@ -181,7 +181,7 @@ class _FoodEditorState extends State<FoodEditor> {
                       setState(() => _isLoading = true);
                       await _dbService.deleteFood(widget.day, widget.food!);
                       setState(() => _isLoading = false);
-                      if (!mounted) return;
+                      if (!context.mounted) return;
                       Navigator.pop(context);
                     },
                     icon: const Icon(
@@ -370,10 +370,7 @@ class _FoodEditorState extends State<FoodEditor> {
           onPressed: _isLoading
               ? null
               : () async {
-                  if (!_formKey.currentState!.validate()) {
-                    print('The form is invalid.');
-                    return;
-                  }
+                  if (!_formKey.currentState!.validate()) return;
                   setState(() => _isLoading = true);
                   if (_isNewEntry) {
                     await _dbService.writeFood(widget.day, _newFood);
@@ -381,7 +378,7 @@ class _FoodEditorState extends State<FoodEditor> {
                     await _dbService.updateFood(widget.day, _newFood);
                   }
                   setState(() => _isLoading = false);
-                  if (!mounted) return;
+                  if (!context.mounted) return;
                   Navigator.pop(context);
                 },
           child: Text(_isNewEntry ? 'Save' : 'Save Changes'),

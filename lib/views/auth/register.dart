@@ -84,10 +84,7 @@ class _RegisterState extends State<Register> {
                   onPressed: _isLoading
                       ? null
                       : () async {
-                          if (!_formKey.currentState!.validate()) {
-                            print('Form is invalid');
-                            return;
-                          }
+                          if (!_formKey.currentState!.validate()) return;
 
                           setState(() {
                             _isLoading = true;
@@ -100,15 +97,13 @@ class _RegisterState extends State<Register> {
                             await _authService.registerWithEmail(
                                 inputEmail, inputPassword, context);
                             return;
-                          } on FirebaseAuthException catch (error) {
+                          } on FirebaseAuthException {
                             // credentiala issue
                             errMsg = 'This email has already been registed.';
-                            print(error);
                           } catch (error) {
                             // server issue
-                            errMsg = 'We\'re having issues connecting to' +
-                                ' our server. Please try again later...';
-                            print(error);
+                            errMsg =
+                                'We\'re having issues connecting to our server. Please try again later...';
                           }
 
                           setState(() {
@@ -148,19 +143,20 @@ class _RegisterState extends State<Register> {
                 ),
               ),
               const SizedBox(width: 10),
-              AppleAuthButton(
-                onPressed: () async {
-                  setState(() => _isLoading = true);
-                  await _authService.logInWithApple(context);
-                  setState(() => _isLoading = true);
-                },
-                themeMode: ThemeMode.dark,
-                isLoading: _isLoading,
-                style: const AuthButtonStyle(
-                  buttonType: AuthButtonType.icon,
-                  iconType: AuthIconType.outlined,
-                ),
-              ),
+              // TODO: Apple authentication
+              // AppleAuthButton(
+              //   onPressed: () async {
+              //     setState(() => _isLoading = true);
+              //     await _authService.logInWithApple(context);
+              //     setState(() => _isLoading = true);
+              //   },
+              //   themeMode: ThemeMode.dark,
+              //   isLoading: _isLoading,
+              //   style: const AuthButtonStyle(
+              //     buttonType: AuthButtonType.icon,
+              //     iconType: AuthIconType.outlined,
+              //   ),
+              // ),
             ],
           ),
           Align(
