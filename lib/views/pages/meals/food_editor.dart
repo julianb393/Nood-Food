@@ -4,6 +4,7 @@ import 'package:nood_food/common/form_utils.dart';
 import 'package:nood_food/common/loader.dart';
 import 'package:nood_food/models/food.dart';
 import 'package:nood_food/models/nutritional_facts.dart';
+import 'package:nood_food/models/search_food.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/services/db_service.dart';
 import 'package:nood_food/util/barcode_scan.dart';
@@ -93,7 +94,7 @@ class _FoodEditorState extends State<FoodEditor> {
   }
 
   void _showFoodSeach() async {
-    Food? selectedFood = await showModalBottomSheet(
+    SearchFood? selectedFood = await showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
           return const FoodSearch();
@@ -101,15 +102,21 @@ class _FoodEditorState extends State<FoodEditor> {
     if (selectedFood == null) return;
     // fill in the details.
     setState(() {
-      _newFood = selectedFood;
-      _nutrition = _newFood.nutrition;
-
-      _nameController.text = _newFood.name;
-      _amountController.text = _nutrition.amount.toString();
-      _proteinController.text = _nutrition.protein.toString();
-      _carbsController.text = _nutrition.carbs.toString();
-      _fatController.text = _nutrition.fat.toString();
-      _consumedAmountController.text = _newFood.consumedAmount.toString();
+      _nameController.text = selectedFood.name;
+      _newFood.name = selectedFood.name;
+      _amountController.text =
+          convertStrToGrams(selectedFood.amountUnit, selectedFood.amount);
+      _nutrition.amount = double.parse(_amountController.text);
+      _proteinController.text =
+          convertStrToGrams(selectedFood.proteinUnit, selectedFood.protein);
+      _nutrition.protein = double.parse(_proteinController.text);
+      _carbsController.text =
+          convertStrToGrams(selectedFood.carbsUnit, selectedFood.carbs);
+      _nutrition.carbs = double.parse(_carbsController.text);
+      _fatController.text =
+          convertStrToGrams(selectedFood.fatUnit, selectedFood.fat);
+      _nutrition.fat = double.parse(_fatController.text);
+      _consumedAmountController.text = '';
       _updateSummary();
     });
   }

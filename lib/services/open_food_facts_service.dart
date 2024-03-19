@@ -27,6 +27,7 @@ Future<Map<String, String>> lookupBarcodeInOpenFoodFacts(String barcode) async {
 }
 
 Future<List<Map<String, String>>> searchFoods(String searchWord) async {
+  // TODO: query by country
   final response = await http.get(
     Uri.parse(
         '$searchEndpoint?json=1&fields=brands,product_name,nutriments,image_url&search_terms=$searchWord'),
@@ -37,6 +38,7 @@ Future<List<Map<String, String>>> searchFoods(String searchWord) async {
     return products
         .map((product) => _parseSearchResults(product as Map<String, dynamic>))
         .where((map) => map.isNotEmpty)
+        .take(15)
         .toList();
   } else {
     throw Exception('Failed to load food data');
@@ -77,6 +79,6 @@ Map<String, String> _parseSearchResults(Map<String, dynamic> product) {
     // usually 100g
     'amount': '100', // TODO: figure out how to get serving size
     'amount_unit': 'g',
-    'image_url': product['image_url']
+    'image_url': product['image_url'] ?? ''
   };
 }

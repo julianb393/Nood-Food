@@ -21,3 +21,9 @@ Unit parseUnitFromSymbol(String symbol) {
 double convertToGrams(Unit unit, double value) {
   return unit.gramsConversion * value;
 }
+
+String convertStrToGrams(String unitStr, String value) {
+  if (unitStr == 'g') return value;
+  Unit unit = Unit.values.firstWhere((unit) => unit.symbol == unitStr);
+  return convertToGrams(unit, double.parse(value)).toStringAsFixed(2);
+}

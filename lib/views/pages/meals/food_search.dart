@@ -1,12 +1,10 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:nood_food/common/form_utils.dart';
 import 'package:nood_food/common/loader.dart';
-import 'package:nood_food/models/food.dart';
 import 'package:nood_food/models/search_food.dart';
-import 'package:nood_food/services/auth_service.dart';
-import 'package:nood_food/services/db_service.dart';
 import 'package:nood_food/services/open_food_facts_service.dart';
 
 class FoodSearch extends StatefulWidget {
@@ -23,7 +21,7 @@ class _FoodSearchState extends State<FoodSearch> {
   Timer? _debounce;
 
 // change debouce duration accordingly
-  Duration _debouceDuration = const Duration(milliseconds: 500);
+  final Duration _debouceDuration = const Duration(milliseconds: 1000);
 
   @override
   void dispose() {
@@ -33,7 +31,6 @@ class _FoodSearchState extends State<FoodSearch> {
 
   @override
   Widget build(BuildContext context) {
-    print(_loadedSearchedFoods.length);
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -66,7 +63,7 @@ class _FoodSearchState extends State<FoodSearch> {
                                   fatUnit: res['fat_unit']!,
                                   carbs: res['carbs']!,
                                   carbsUnit: res['carbs_unit']!,
-                                  imgUrl: res['img_url']),
+                                  imgUrl: res['image_url']),
                             )
                             .toList();
                       });
@@ -89,10 +86,20 @@ class _FoodSearchState extends State<FoodSearch> {
                       itemBuilder: (BuildContext builder, int i) {
                         SearchFood food = _loadedSearchedFoods[i];
                         return ListTile(
-                          // leading: Icon(food.meal.getIcon()),
+                          leading: SizedBox(
+                            height: 80,
+                            width: 80,
+                            child: CachedNetworkImage(
+                              errorWidget: ((context, url, error) =>
+                                  const Icon(Icons.fastfood_outlined)),
+                              progressIndicatorBuilder:
+                                  (context, url, progress) => const Loader(),
+                              imageUrl: food.imgUrl!,
+                            ),
+                          ),
                           title: Text(food.name),
                           subtitle: Text(
-                            '${food.protein}${food.proteinUnit}|${food.fat}${food.fatUnit}|${food.carbs}${food.carbsUnit}',
+                            'protein: ${food.protein}${food.proteinUnit}|fat: ${food.fat}${food.fatUnit}|carbs: ${food.carbs}${food.carbsUnit}',
                           ),
                           onTap: () {
                             // send the selected food to food editor.
