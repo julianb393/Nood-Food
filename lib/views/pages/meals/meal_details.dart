@@ -5,9 +5,7 @@ import 'package:nood_food/util/meal_type.dart';
 import 'package:nood_food/util/style.dart';
 import 'package:nood_food/views/pages/meals/food_editor.dart';
 import 'package:nood_food/views/pages/meals/meal_summary_table.dart';
-import 'package:pie_chart/pie_chart.dart';
 import 'package:primer_progress_bar/primer_progress_bar.dart';
-import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 
 class MealDetails extends StatelessWidget {
   final MealType mealType;

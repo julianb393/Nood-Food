@@ -48,7 +48,8 @@ class MealSummaryTable extends StatelessWidget {
           .map((food) => DataRow2(
                 onTap: () => _navigateToFoodEditor(context, food),
                 cells: [
-                  DataCell(Text(food.name, softWrap: true)),
+                  // Removes the brand from the name, if present.
+                  DataCell(Text(food.name.split('-')[0], softWrap: true)),
                   DataCell(Text(
                       '${food.consumedAmount.toString()} ${food.consumedUom.symbol}')),
                   DataCell(Text(computeTotalCaloriesFromFood(food).toString())),
