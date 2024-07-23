@@ -47,7 +47,7 @@ class _PageNavigatorState extends State<PageNavigator> {
             errorWidget: (context, url, error) => const Icon(Icons.error),
             imageBuilder: (context, imageProvider) {
               return CircleAvatar(
-                radius: 23,
+                radius: 18,
                 backgroundImage: imageProvider,
               );
             },
