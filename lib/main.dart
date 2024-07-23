@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
             // text styling for headlines, titles, bodies of text, and more.
             textTheme: TextTheme(
               displayLarge: const TextStyle(
-                fontSize: 72,
+                fontSize: 25,
                 fontWeight: FontWeight.bold,
               ),
               // ···

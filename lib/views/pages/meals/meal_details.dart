@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:nood_food/models/food.dart';
 import 'package:nood_food/util/macronutrient.dart';
 import 'package:nood_food/util/meal_type.dart';
+import 'package:nood_food/util/style.dart';
 import 'package:nood_food/views/pages/meals/food_editor.dart';
 import 'package:nood_food/views/pages/meals/meal_summary_table.dart';
 import 'package:pie_chart/pie_chart.dart';
+import 'package:primer_progress_bar/primer_progress_bar.dart';
+import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 
 class MealDetails extends StatelessWidget {
   final MealType mealType;
@@ -59,20 +62,33 @@ class MealDetails extends StatelessWidget {
             ),
             Expanded(
               flex: 1,
-              child: PieChart(
-                chartRadius: 170,
-                dataMap: {
-                  'protein': totalProtein,
-                  'carbs': totalCarbs,
-                  'fat': totalFat
-                },
-                formatChartValues: (double val) =>
-                    '${val.toStringAsFixed(2)} g',
-                centerText: '${computeTotalCalories(
-                  totalProtein,
-                  totalCarbs,
-                  totalFat,
-                ).toStringAsFixed(2)} kcal',
+              child: Column(
+                children: [
+                  FittedBox(
+                    fit: BoxFit.contain,
+                    child: StyledText.displayLarge(
+                        'Calories Consumed: ${computeTotalCalories(totalProtein, totalCarbs, totalFat)} kcal'),
+                  ),
+                  PrimerProgressBar(
+                    segments: [
+                      Segment(
+                        value: totalProtein.toInt(),
+                        color: Colors.blue,
+                        label: const Text('Protein (g)'),
+                      ),
+                      Segment(
+                        value: totalFat.toInt(),
+                        color: Colors.red,
+                        label: const Text('Fat (g)'),
+                      ),
+                      Segment(
+                        value: totalCarbs.toInt(),
+                        color: Colors.green,
+                        label: const Text('Carbs (g)'),
+                      )
+                    ],
+                  ),
+                ],
               ),
             ),
           ],
