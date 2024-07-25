@@ -1,10 +1,13 @@
+import 'dart:math';
+
+import 'package:dashed_circular_progress_bar/dashed_circular_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:nood_food/common/date_picker.dart';
 import 'package:nood_food/models/food.dart';
 import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/util/macronutrient.dart';
 import 'package:nood_food/util/style.dart';
-import 'package:pie_chart/pie_chart.dart';
+import 'package:primer_progress_bar/primer_progress_bar.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
@@ -44,6 +47,8 @@ class _HomeState extends State<Home> {
     _computeConsumedMacros(foods);
     double consumedCalories =
         computeTotalCalories(_consumedProtein, _consumedCarbs, _consumedFat);
+    int remainingCalories =
+        (widget.user.calorieLimit! - consumedCalories).toInt();
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -62,19 +67,62 @@ class _HomeState extends State<Home> {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              PieChart(
-                dataMap: {
-                  'Protein': _consumedProtein,
-                  'Carbs': _consumedCarbs,
-                  'Fat': _consumedFat,
-                },
-                baseChartColor: Colors.grey[50]!.withOpacity(0.15),
-                centerText: '${consumedCalories.toStringAsFixed(2)} kcal',
-                formatChartValues: (val) => '${val.toStringAsFixed(2)} g',
+              DashedCircularProgressBar.aspectRatio(
+                aspectRatio: 1.5,
+                progress: min(widget.user.calorieLimit!, consumedCalories),
+                maxProgress: widget.user.calorieLimit!,
+                foregroundColor:
+                    remainingCalories < 0 ? Colors.red : Colors.green,
+                backgroundColor: Colors.grey,
+                foregroundStrokeWidth: 20,
+                backgroundStrokeWidth: 20,
+                seekSize: remainingCalories <= 0 ? 0 : 15,
+                seekColor: Colors.greenAccent,
+                animation: true,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '${consumedCalories.toInt()}',
+                      style: TextStyle(
+                          color:
+                              remainingCalories < 0 ? Colors.red : Colors.green,
+                          fontSize: 40),
+                    ),
+                    const Text(
+                      'Calories Consumed',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
+              PrimerProgressBar(
+                segments: [
+                  Segment(
+                    value: _consumedProtein.toInt(),
+                    color: Colors.blue,
+                    label: const Text('Protein (g)'),
+                  ),
+                  Segment(
+                    value: _consumedFat.toInt(),
+                    color: Colors.red,
+                    label: const Text('Fat (g)'),
+                  ),
+                  Segment(
+                    value: _consumedCarbs.toInt(),
+                    color: Colors.green,
+                    label: const Text('Carbs (g)'),
+                  )
+                ],
               ),
               widget.user.calorieLimit != null
                   ? Text(
-                      'You have ${(widget.user.calorieLimit! - consumedCalories).toStringAsFixed(2)} calories remaining.')
+                      remainingCalories >= 0
+                          ? 'You have $remainingCalories calories remaining'
+                          : 'You have consumed a surplus of ${(remainingCalories) * -1} calories',
+                    )
                   : const SizedBox(),
             ],
           )
