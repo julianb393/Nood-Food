@@ -22,8 +22,6 @@ class _PageNavigatorState extends State<PageNavigator> {
   late final DBService _dbService;
   double dailyCaloriesAllowed = 3200.0;
   DateTime _selectedDay = DateTime.now();
-  late Widget _accountIcon;
-  late Widget _accountIconActive;
   late String? accIconUrl;
 
   int _selectedPageIndex = 0;
@@ -41,41 +39,11 @@ class _PageNavigatorState extends State<PageNavigator> {
     return _selectedDay;
   }
 
-  void _setAccountIcon(String? photoURL) {
-    if (photoURL == null) return;
-    // Will be triggered after build is complete.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Widget profilePic = CachedNetworkImage(
-        imageUrl: photoURL,
-        placeholder: (context, val) => const Loader(),
-        errorWidget: (context, url, error) => const Icon(Icons.error),
-        imageBuilder: (context, imageProvider) {
-          return CircleAvatar(
-            radius: 18,
-            backgroundImage: imageProvider,
-          );
-        },
-      );
-      _accountIcon = CircleAvatar(
-        backgroundColor: Colors.transparent,
-        radius: 20,
-        child: profilePic,
-      );
-      _accountIconActive = CircleAvatar(
-        backgroundColor: Colors.greenAccent,
-        radius: 20,
-        child: profilePic,
-      );
-    });
-  }
-
   @override
   void initState() {
     super.initState();
     _authService = AuthService();
     _dbService = DBService(uid: _authService.userUid);
-    _accountIcon = const Icon(Icons.person_outlined);
-    _accountIconActive = const Icon(Icons.person);
   }
 
   @override
