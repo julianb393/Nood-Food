@@ -30,7 +30,7 @@ Future<List<Map<String, String>>> searchFoods(String searchWord) async {
   // TODO: query by country
   final response = await http.get(
     Uri.parse(
-        '$searchEndpoint?json=1&fields=brands,product_name,nutriments,image_url&search_terms=$searchWord'),
+        '$searchEndpoint?json=1&fields=brands,product_name,product_quantity,product_quantity_unit,nutriments,image_url&search_terms=$searchWord'),
   );
 
   if (response.statusCode == 200) {
@@ -56,14 +56,18 @@ Map<String, String> _parseSearchResults(Map<String, dynamic> product) {
   String? carbsUnit = product['nutriments']['carbohydrates_unit'];
   dynamic fat = product['nutriments']['fat'];
   String? fatUnit = product['nutriments']['fat_unit'];
-  // String? amount = product['nutrition_data_per'];
+  dynamic amount = product['product_quantity'];
+  String? amountUnit = product['product_quantity_unit'];
+  print('$protein $carbs $fat $amount');
   if (name == null ||
       protein == null ||
       proteinUnit == null ||
       carbs == null ||
       carbsUnit == null ||
       fat == null ||
-      fatUnit == null) {
+      fatUnit == null ||
+      amount == null ||
+      amountUnit == null) {
     return {};
   }
   return {
@@ -75,9 +79,9 @@ Map<String, String> _parseSearchResults(Map<String, dynamic> product) {
     'carbs_unit': carbsUnit,
     'fat': (fat.runtimeType == String) ? fat : fat.toStringAsFixed(2),
     'fat_unit': fatUnit,
-    // usually 100g
-    'amount': '100', // TODO: figure out how to get serving size
-    'amount_unit': 'g',
+    'amount':
+        (amount.runtimeType == String) ? amount : amount.toStringAsFixed(2),
+    'amount_unit': amountUnit,
     'image_url': product['image_url'] ?? ''
   };
 }

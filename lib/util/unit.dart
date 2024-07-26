@@ -1,5 +1,6 @@
 enum Unit {
   grams(symbol: "g", gramsConversion: 1),
+  milliliter(symbol: 'ml', gramsConversion: 1),
   cups(symbol: "cups", gramsConversion: 340),
   tablespoon(symbol: "tbsp", gramsConversion: 14.175),
   teaspoon(symbol: "tsp", gramsConversion: 5.69),

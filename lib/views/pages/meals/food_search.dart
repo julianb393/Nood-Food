@@ -6,6 +6,7 @@ import 'package:nood_food/common/form_utils.dart';
 import 'package:nood_food/common/loader.dart';
 import 'package:nood_food/models/search_food.dart';
 import 'package:nood_food/services/open_food_facts_service.dart';
+import 'package:nood_food/util/macronutrient.dart';
 
 class FoodSearch extends StatefulWidget {
   const FoodSearch({super.key});
@@ -81,32 +82,37 @@ class _FoodSearchState extends State<FoodSearch> {
           _isLoading
               ? const Loader()
               : Expanded(
-                  child: ListView.builder(
-                      itemCount: _loadedSearchedFoods.length,
-                      itemBuilder: (BuildContext builder, int i) {
-                        SearchFood food = _loadedSearchedFoods[i];
-                        return ListTile(
-                          leading: SizedBox(
-                            height: 80,
-                            width: 80,
-                            child: CachedNetworkImage(
-                              errorWidget: ((context, url, error) =>
-                                  const Icon(Icons.fastfood_outlined)),
-                              progressIndicatorBuilder:
-                                  (context, url, progress) => const Loader(),
-                              imageUrl: food.imgUrl!,
-                            ),
-                          ),
-                          title: Text(food.name),
-                          subtitle: Text(
-                            'protein: ${food.protein}${food.proteinUnit}|fat: ${food.fat}${food.fatUnit}|carbs: ${food.carbs}${food.carbsUnit}',
-                          ),
-                          onTap: () {
-                            // send the selected food to food editor.
-                            Navigator.pop(context, food);
-                          },
-                        );
-                      }))
+                  child: _loadedSearchedFoods.isEmpty
+                      ? const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('No results found.'),
+                        )
+                      : ListView.builder(
+                          itemCount: _loadedSearchedFoods.length,
+                          itemBuilder: (BuildContext builder, int i) {
+                            SearchFood food = _loadedSearchedFoods[i];
+                            return ListTile(
+                              leading: SizedBox(
+                                height: 80,
+                                width: 80,
+                                child: CachedNetworkImage(
+                                  errorWidget: ((context, url, error) =>
+                                      const Icon(Icons.fastfood_outlined)),
+                                  progressIndicatorBuilder:
+                                      (context, url, progress) =>
+                                          const Loader(),
+                                  imageUrl: food.imgUrl!,
+                                ),
+                              ),
+                              title: Text(food.name),
+                              subtitle: Text(
+                                  '${computeTotalCalories(double.parse(food.protein), double.parse(food.carbs), double.parse(food.fat))}kcal for ${food.amount} ${food.amountUnit}'),
+                              onTap: () {
+                                // send the selected food to food editor.
+                                Navigator.pop(context, food);
+                              },
+                            );
+                          }))
         ],
       ),
     );
