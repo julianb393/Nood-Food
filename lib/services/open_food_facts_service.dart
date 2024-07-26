@@ -26,11 +26,11 @@ Future<Map<String, String>> lookupBarcodeInOpenFoodFacts(String barcode) async {
   }
 }
 
-Future<List<Map<String, String>>> searchFoods(String searchWord) async {
-  // TODO: query by country
+Future<List<Map<String, String>>> searchFoods(
+    String searchWord, int page) async {
   final response = await http.get(
     Uri.parse(
-        '$searchEndpoint?json=1&fields=brands,product_name,product_quantity,product_quantity_unit,nutriments,image_url&search_terms=$searchWord'),
+        '$searchEndpoint?json=1&fields=brands,product_name,product_quantity,product_quantity_unit,nutriments,image_url&page=$page&search_terms=$searchWord'),
   );
 
   if (response.statusCode == 200) {
@@ -38,10 +38,9 @@ Future<List<Map<String, String>>> searchFoods(String searchWord) async {
     return products
         .map((product) => _parseSearchResults(product as Map<String, dynamic>))
         .where((map) => map.isNotEmpty)
-        .take(15)
         .toList();
   } else {
-    throw Exception('Failed to load food data');
+    throw Exception('Failed to load food data: ${response.statusCode}');
   }
 }
 
@@ -56,18 +55,15 @@ Map<String, String> _parseSearchResults(Map<String, dynamic> product) {
   String? carbsUnit = product['nutriments']['carbohydrates_unit'];
   dynamic fat = product['nutriments']['fat'];
   String? fatUnit = product['nutriments']['fat_unit'];
-  dynamic amount = product['product_quantity'];
-  String? amountUnit = product['product_quantity_unit'];
-  print('$protein $carbs $fat $amount');
+  dynamic amount = product['product_quantity'] ?? '100';
+  String amountUnit = product['product_quantity_unit'] ?? 'g';
   if (name == null ||
       protein == null ||
       proteinUnit == null ||
       carbs == null ||
       carbsUnit == null ||
       fat == null ||
-      fatUnit == null ||
-      amount == null ||
-      amountUnit == null) {
+      fatUnit == null) {
     return {};
   }
   return {

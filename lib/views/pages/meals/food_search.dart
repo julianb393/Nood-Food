@@ -18,15 +18,70 @@ class FoodSearch extends StatefulWidget {
 class _FoodSearchState extends State<FoodSearch> {
   bool _isLoading = false;
   Timer? stoppedTypingTimer;
-  List<SearchFood> _loadedSearchedFoods = [];
+  final List<SearchFood> _loadedSearchedFoods = [];
   Timer? _debounce;
+  final ScrollController _scrollController = ScrollController();
+  int _page = 1;
+  String _searchWord = '';
+  bool searchStarted = false;
 
-// change debouce duration accordingly
   final Duration _debouceDuration = const Duration(milliseconds: 1000);
+
+  void _searchFoods() async {
+    if (_searchWord.isEmpty) {
+      setState(() {
+        _loadedSearchedFoods.clear();
+        searchStarted = false;
+      });
+      return;
+    }
+    List<SearchFood> searchResults =
+        await searchFoods(_searchWord, _page).then((results) {
+      return results
+          .map(
+            (res) => SearchFood(
+                name: res['name']!,
+                amount: res['amount']!,
+                amountUnit: res['amount_unit']!,
+                protein: res['protein']!,
+                proteinUnit: res['protein_unit']!,
+                fat: res['fat']!,
+                fatUnit: res['fat_unit']!,
+                carbs: res['carbs']!,
+                carbsUnit: res['carbs_unit']!,
+                imgUrl: res['image_url']),
+          )
+          .toList();
+    });
+    setState(() {
+      _loadedSearchedFoods.addAll(searchResults);
+      searchStarted = true;
+    });
+  }
+
+  void _loadMoreData() {
+    if (_scrollController.hasClients &&
+        _scrollController.position.pixels >
+            _scrollController.position.maxScrollExtent - 200) {
+      setState(() {
+        _page += 1;
+        _isLoading = true;
+      });
+      _searchFoods();
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_loadMoreData);
+  }
 
   @override
   void dispose() {
     _debounce?.cancel();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -45,33 +100,15 @@ class _FoodSearchState extends State<FoodSearch> {
                       prefixIcon: const Icon(Icons.search),
                       label: const Text('Search')),
                   onChanged: (val) {
-                    setState((() => _isLoading = true));
+                    setState(() => _isLoading = true);
                     if (_debounce?.isActive ?? false) {
                       _debounce?.cancel();
                     }
-                    _debounce = Timer(_debouceDuration, () async {
-                      List<SearchFood> searchResults =
-                          await searchFoods(val).then((results) {
-                        return results
-                            .map(
-                              (res) => SearchFood(
-                                  name: res['name']!,
-                                  amount: res['amount']!,
-                                  amountUnit: res['amount_unit']!,
-                                  protein: res['protein']!,
-                                  proteinUnit: res['protein_unit']!,
-                                  fat: res['fat']!,
-                                  fatUnit: res['fat_unit']!,
-                                  carbs: res['carbs']!,
-                                  carbsUnit: res['carbs_unit']!,
-                                  imgUrl: res['image_url']),
-                            )
-                            .toList();
-                      });
-                      setState(() {
-                        _loadedSearchedFoods = searchResults;
-                        _isLoading = false;
-                      });
+                    _searchWord = val;
+                    _page = 1;
+                    _debounce = Timer(_debouceDuration, () {
+                      _searchFoods();
+                      setState(() => _isLoading = false);
                     });
                   },
                 ),
@@ -82,12 +119,13 @@ class _FoodSearchState extends State<FoodSearch> {
           _isLoading
               ? const Loader()
               : Expanded(
-                  child: _loadedSearchedFoods.isEmpty
+                  child: searchStarted && _loadedSearchedFoods.isEmpty
                       ? const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('No results found.'),
                         )
                       : ListView.builder(
+                          controller: _scrollController,
                           itemCount: _loadedSearchedFoods.length,
                           itemBuilder: (BuildContext builder, int i) {
                             SearchFood food = _loadedSearchedFoods[i];
