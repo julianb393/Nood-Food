@@ -6,6 +6,7 @@ import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/services/db_service.dart';
 import 'package:nood_food/views/pages/account/account.dart';
+import 'package:nood_food/views/pages/chart.dart';
 import 'package:nood_food/views/pages/home.dart';
 import 'package:nood_food/views/pages/meals/meals.dart';
 import 'package:provider/provider.dart';
@@ -25,13 +26,12 @@ class _PageNavigatorState extends State<PageNavigator> {
   late String? accIconUrl;
 
   int _selectedPageIndex = 0;
-  final List<String> _pageTitles = ['Nood Food', 'Meals', 'Account'];
+  final List<String> _pageTitles = ['Nood Food', 'Meals', 'Chart', 'Account'];
 
   // Will allow the home to control the date, which can get shared with others.
   void _updateSelectedDate(DateTime newDate) {
     setState(() {
       _selectedDay = newDate;
-      print('rebuilding');
     });
   }
 
@@ -86,6 +86,10 @@ class _PageNavigatorState extends State<PageNavigator> {
                       activeIcon: Icon(Icons.fastfood),
                       label: 'Meals',
                     ),
+                    const BottomNavigationBarItem(
+                        icon: Icon(Icons.show_chart),
+                        activeIcon: Icon(Icons.show_chart_outlined),
+                        label: 'Chart'),
                     BottomNavigationBarItem(
                       icon: CircleAvatar(
                         backgroundColor: Colors.transparent,
@@ -101,6 +105,7 @@ class _PageNavigatorState extends State<PageNavigator> {
                     ),
                   ],
                   backgroundColor: Colors.black54,
+                  type: BottomNavigationBarType.fixed,
                   elevation: 0,
                   currentIndex: _selectedPageIndex,
                   selectedItemColor: const Color.fromARGB(255, 170, 231, 220),
@@ -113,6 +118,7 @@ class _PageNavigatorState extends State<PageNavigator> {
                     getSelectedDate: _getSelectedDate,
                   ),
                   Meals(day: _selectedDay),
+                  const Chart(),
                   Account(user: snapshot.data!),
                 ][_selectedPageIndex]);
           }),
