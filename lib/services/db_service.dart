@@ -56,13 +56,14 @@ class DBService {
         .snapshots()
         .map((snapshot) {
       Map<int, double> monthToAvg = {};
-      if (snapshot.data()!.isEmpty) return monthToAvg;
+      for (int i = 1; i <= 12; i++) {
+        monthToAvg[i] = 0.0;
+      }
+      if (!snapshot.exists || snapshot.data()!.isEmpty) return monthToAvg;
       for (int i = 1; i <= 12; i++) {
         if (snapshot.data()!.containsKey('$i.total_calories')) {
           monthToAvg[i] = snapshot.data()!['$i.total_calories'] /
               snapshot.data()!['$i.total_entries'];
-        } else {
-          monthToAvg[i] = 0.0;
         }
       }
       return monthToAvg;
