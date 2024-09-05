@@ -5,6 +5,7 @@ import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/models/nutritional_facts.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/util/active_level.dart';
+import 'package:nood_food/util/macronutrient.dart';
 import 'package:nood_food/util/meal_type.dart';
 import 'package:nood_food/util/unit.dart';
 
@@ -45,6 +46,27 @@ class DBService {
         .snapshots()
         .map((snapshot) =>
             snapshot.docs.map((doc) => _parseFoodFromDoc(doc)).toList());
+  }
+
+  Stream<Map<int, double>> getCaloriesAvgsForYear(int year) {
+    return _userCollection
+        .doc(uid)
+        .collection('averages')
+        .doc('$year')
+        .snapshots()
+        .map((snapshot) {
+      Map<int, double> monthToAvg = {};
+      if (snapshot.data()!.isEmpty) return monthToAvg;
+      for (int i = 1; i <= 12; i++) {
+        if (snapshot.data()!.containsKey('$i.total_calories')) {
+          monthToAvg[i] = snapshot.data()!['$i.total_calories'] /
+              snapshot.data()!['$i.total_entries'];
+        } else {
+          monthToAvg[i] = 0.0;
+        }
+      }
+      return monthToAvg;
+    });
   }
 
   NFUser? _parseUserFromSnapshot(DocumentSnapshot snapshot) {
@@ -103,6 +125,15 @@ class DBService {
       'nutritional_facts': food.nutrition.toJson(),
       'meal': food.meal.name
     });
+    await _userCollection
+        .doc(uid)
+        .collection('averages')
+        .doc('${date.year}')
+        .set({
+      '${date.month}.total_entries': FieldValue.increment(1),
+      '${date.month}.total_calories':
+          FieldValue.increment(computeTotalCaloriesFromFood(food))
+    }, SetOptions(merge: true));
   }
 
   Future<void> updateFood(DateTime date, Food food) async {
