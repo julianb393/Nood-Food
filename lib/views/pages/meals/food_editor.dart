@@ -42,6 +42,7 @@ class _FoodEditorState extends State<FoodEditor> {
   final _fatController = TextEditingController();
   final _consumedAmountController = TextEditingController();
 
+  late Food _oldFood;
   late Food _newFood;
   late NutritionalFacts _nutrition;
   late bool _isNewEntry;
@@ -66,7 +67,8 @@ class _FoodEditorState extends State<FoodEditor> {
           meal: widget.mealType);
     } else {
       _isNewEntry = false;
-      _newFood = widget.food!.clone();
+      _oldFood = widget.food!.clone();
+      _newFood = _oldFood.clone();
       _nutrition = widget.food!.nutrition.clone();
       _nameController.text = _newFood.name;
       _amountController.text = _nutrition.amount.toString();
@@ -375,7 +377,7 @@ class _FoodEditorState extends State<FoodEditor> {
                   if (_isNewEntry) {
                     await _dbService.writeFood(widget.day, _newFood);
                   } else if (widget.food != _newFood) {
-                    await _dbService.updateFood(widget.day, _newFood);
+                    await _dbService.updateFood(widget.day, _newFood, _oldFood);
                   }
                   setState(() => _isLoading = false);
                   if (!context.mounted) return;

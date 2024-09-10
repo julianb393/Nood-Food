@@ -137,7 +137,7 @@ class DBService {
     }, SetOptions(merge: true));
   }
 
-  Future<void> updateFood(DateTime date, Food food) async {
+  Future<void> updateFood(DateTime date, Food food, Food oldFood) async {
     await _userCollection
         .doc(uid)
         .collection(_df.format(date))
@@ -149,6 +149,15 @@ class DBService {
       'nutritional_facts': food.nutrition.toJson(),
       'meal': food.meal.name
     });
+
+    await _userCollection
+        .doc(uid)
+        .collection('averages')
+        .doc('${date.year}')
+        .set({
+      '${date.month}.total_calories':
+          FieldValue.increment(-computeTotalCaloriesFromFood(food))
+    }, SetOptions(merge: true));
   }
 
   Future<void> deleteFood(DateTime date, Food food) async {
@@ -157,6 +166,16 @@ class DBService {
         .collection(_df.format(date))
         .doc(food.uid)
         .delete();
+
+    await _userCollection
+        .doc(uid)
+        .collection('averages')
+        .doc('${date.year}')
+        .set({
+      '${date.month}.total_entries': FieldValue.increment(-1),
+      '${date.month}.total_calories':
+          FieldValue.increment(-computeTotalCaloriesFromFood(food))
+    }, SetOptions(merge: true));
   }
 
   Future<void> updateUserDetails(DateTime? dob, double? weight, String? sex,

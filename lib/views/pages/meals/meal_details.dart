@@ -21,7 +21,7 @@ class MealDetails extends StatelessWidget {
   /// Navigates to the Food Editor page. If [foodtoView] was provided, then we
   /// initialize the state has being in vieweing which will allow uses to edit
   /// the record if they wish to. Otherwise, the Food Editor will be open with
-  /// no fields filled, assuming the user wants to create a nthis.ew Food record.
+  /// no fields filled, assuming the user wants to create a new Food record.
   void _navigateToFoodEditor(BuildContext context, Food? foodToView) {
     Navigator.push(
       context,
