@@ -155,8 +155,9 @@ class DBService {
         .collection('averages')
         .doc('${date.year}')
         .set({
-      '${date.month}.total_calories':
-          FieldValue.increment(-computeTotalCaloriesFromFood(food))
+      '${date.month}.total_calories': FieldValue.increment(
+          computeTotalCaloriesFromFood(food) -
+              computeTotalCaloriesFromFood(oldFood))
     }, SetOptions(merge: true));
   }
 
