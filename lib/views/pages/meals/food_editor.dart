@@ -197,7 +197,7 @@ class _FoodEditorState extends State<FoodEditor> {
       body: _isLoading
           ? const Loader()
           : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: Form(

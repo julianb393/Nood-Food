@@ -81,7 +81,7 @@ class MealDetails extends StatelessWidget {
                       ),
                       Segment(
                         value: totalCarbs.toInt(),
-                        color: Colors.green,
+                        color: Colors.purple,
                         label: const Text('Carbs (g)'),
                       )
                     ],

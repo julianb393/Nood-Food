@@ -112,7 +112,7 @@ class _HomeState extends State<Home> {
                   ),
                   Segment(
                     value: _consumedCarbs.toInt(),
-                    color: Colors.green,
+                    color: Colors.purple,
                     label: const Text('Carbs (g)'),
                   )
                 ],

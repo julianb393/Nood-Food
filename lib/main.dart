@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
       initialData: null,
       value: AuthService().user,
       child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'Nood Food',
           theme: ThemeData(
             // useMaterial3: true,
