@@ -13,6 +13,8 @@ class NFUser {
   double? calorieLimit;
   ActiveLevel? activeLevel;
   bool isInit;
+  int numDaysTracked;
+  int? numDaysWithinCalorieLimit;
   NFUser(
       {this.uid,
       this.email,
@@ -24,10 +26,18 @@ class NFUser {
       this.height,
       this.calorieLimit,
       this.activeLevel,
-      required this.isInit});
+      required this.isInit,
+      required this.numDaysTracked});
 
-  void updateUser(String? dob, String? sex, double? weight, double? height,
-      double? calorieLimit, ActiveLevel? activeLevel, bool isInit) {
+  void updateUser(
+      String? dob,
+      String? sex,
+      double? weight,
+      double? height,
+      double? calorieLimit,
+      ActiveLevel? activeLevel,
+      bool isInit,
+      int numDaysTracked) {
     this.dob = dob;
     this.sex = sex;
     this.weight = weight;
@@ -35,6 +45,7 @@ class NFUser {
     this.calorieLimit = calorieLimit ?? 0;
     this.activeLevel = activeLevel;
     this.isInit = isInit;
+    this.numDaysTracked = numDaysTracked;
   }
 
   @override

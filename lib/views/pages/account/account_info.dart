@@ -380,7 +380,8 @@ class _AccountInfoState extends State<AccountInfo> {
                           height: _height,
                           calorieLimit: _calorieLimit,
                           activeLevel: _activeLevel,
-                          isInit: widget.user?.isInit ?? false);
+                          isInit: widget.user?.isInit ?? false,
+                          numDaysTracked: widget.user?.numDaysTracked ?? 0);
 
                       await _authService.updateAccountInfo(
                           newUser, _selectedImage, widget.user);

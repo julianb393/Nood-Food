@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:async/async.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -22,7 +21,8 @@ class AuthService {
             email: fbUser.email,
             displayName: fbUser.displayName,
             photoURL: fbUser.photoURL,
-            isInit: false);
+            isInit: false,
+            numDaysTracked: 0);
   }
 
   /// Creates a stream on changes in user's authentication state, i.e. is

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:nood_food/models/food.dart';
@@ -83,9 +85,10 @@ class DBService {
     ActiveLevel? activeLevel =
         ActiveLevel.parseFromString(data?['active_level']);
     bool isInit = data?['is_init'] ?? false;
+    int daysTracked = data?['days_tracked'] ?? 0;
 
-    user.updateUser(
-        dob, sex, weight, height, calorieLimit, activeLevel, isInit);
+    user.updateUser(dob, sex, weight, height, calorieLimit, activeLevel, isInit,
+        daysTracked);
     return user;
   }
 
@@ -127,7 +130,7 @@ class DBService {
     return foods;
   }
 
-  Future<void> writeFood(DateTime date, Food food) async {
+  Future<void> writeFood(DateTime date, Food food, bool isFirstFood) async {
     await _userCollection.doc(uid).collection(_df.format(date)).doc().set({
       'name': food.name.toUpperCase(),
       'consumed_amount': food.consumedAmount,
@@ -135,6 +138,11 @@ class DBService {
       'nutritional_facts': food.nutrition.toJson(),
       'meal': food.meal.name
     });
+    if (isFirstFood) {
+      await _userCollection.doc(uid).update({
+        'days_tracked': FieldValue.increment(1),
+      });
+    }
     await _userCollection
         .doc(uid)
         .collection('averages')
@@ -170,12 +178,18 @@ class DBService {
     }, SetOptions(merge: true));
   }
 
-  Future<void> deleteFood(DateTime date, Food food) async {
+  Future<void> deleteFood(DateTime date, Food food, bool isLastFood) async {
     await _userCollection
         .doc(uid)
         .collection(_df.format(date))
         .doc(food.uid)
         .delete();
+
+    if (isLastFood) {
+      await _userCollection.doc(uid).update({
+        'days_tracked': FieldValue.increment(-1),
+      });
+    }
 
     await _userCollection
         .doc(uid)

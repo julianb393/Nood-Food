@@ -17,11 +17,13 @@ import 'package:nood_food/views/pages/meals/food_search.dart';
 class FoodEditor extends StatefulWidget {
   final MealType mealType;
   final DateTime day;
+  final int foodsCount;
   final Food? food;
   const FoodEditor({
     super.key,
     required this.mealType,
     required this.day,
+    required this.foodsCount,
     this.food,
   });
 
@@ -181,7 +183,8 @@ class _FoodEditorState extends State<FoodEditor> {
                 : IconButton(
                     onPressed: () async {
                       setState(() => _isLoading = true);
-                      await _dbService.deleteFood(widget.day, widget.food!);
+                      await _dbService.deleteFood(
+                          widget.day, widget.food!, widget.foodsCount == 1);
                       setState(() => _isLoading = false);
                       if (!context.mounted) return;
                       Navigator.pop(context);
@@ -375,7 +378,8 @@ class _FoodEditorState extends State<FoodEditor> {
                   if (!_formKey.currentState!.validate()) return;
                   setState(() => _isLoading = true);
                   if (_isNewEntry) {
-                    await _dbService.writeFood(widget.day, _newFood);
+                    await _dbService.writeFood(
+                        widget.day, _newFood, widget.foodsCount == 0);
                   } else if (widget.food != _newFood) {
                     await _dbService.updateFood(widget.day, _newFood, _oldFood);
                   }

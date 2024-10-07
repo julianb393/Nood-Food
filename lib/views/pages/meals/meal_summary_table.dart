@@ -28,6 +28,7 @@ class MealSummaryTable extends StatelessWidget {
           mealType: meal,
           day: day,
           food: foodToView,
+          foodsCount: foods.length,
         ),
       ),
     );

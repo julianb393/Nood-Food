@@ -29,6 +29,7 @@ class MealDetails extends StatelessWidget {
         builder: (context) => FoodEditor(
           mealType: mealType,
           day: day,
+          foodsCount: foods.length,
           food: foodToView,
         ),
       ),
