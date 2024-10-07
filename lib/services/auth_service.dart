@@ -1,13 +1,13 @@
 import 'dart:io';
 
+import 'package:async/async.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/db_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:nood_food/util/active_level.dart';
-import 'package:nood_food/views/pages/account/account_info.dart';
 
 /// Authentication service layer for interacting with the backend in terms of
 /// authentication of users
@@ -19,14 +19,20 @@ class AuthService {
         ? null
         : NFUser(
             uid: fbUser.uid,
+            email: fbUser.email,
             displayName: fbUser.displayName,
-            photoURL: fbUser.photoURL);
+            photoURL: fbUser.photoURL,
+            isInit: false);
   }
 
   /// Creates a stream on changes in user's authentication state, i.e. is
   /// logged in or not.
   Stream<NFUser?> get user {
     return _auth.authStateChanges().map(_parseUserFromFirebaseUser);
+
+    // return StreamGroup.merge([_auth.authStateChanges(), _auth.userChanges()])
+    // .asBroadcastStream()
+    // .map(_parseUserFromFirebaseUser);
   }
 
   String? get userUid {
@@ -37,38 +43,24 @@ class AuthService {
     return _parseUserFromFirebaseUser(_auth.currentUser);
   }
 
-  /// On registration, user needs to indicate display name and other info.
-  Future<void> _navigateToAccountInfo(BuildContext context) async {
-    await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (builder) => AccountInfo(
-                  user: _parseUserFromFirebaseUser(_auth.currentUser),
-                )));
-  }
-
-  Future<void> registerWithEmail(
+  /// Creates a new user account with the inputted [email] and [password]. If an
+  /// account with that [email] already exists, then false is return. Otherwise,
+  /// false.
+  Future<bool> registerWithEmail(
       String email, String password, BuildContext context) async {
-    await _auth
-        .createUserWithEmailAndPassword(email: email, password: password)
-        .then((cred) async {
-      await _navigateToAccountInfo(context);
-      return cred;
-    });
+    // Indeed a new user
+    bool exists = await checkIfUserExists(email);
+    if (!exists && context.mounted) {
+      await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      return true;
+    }
+    return false;
   }
 
   Future<void> loginWithEmail(
       String email, String password, BuildContext context) async {
-    await _auth
-        .signInWithEmailAndPassword(email: email, password: password)
-        .then((cred) async {
-      // Safe guard incase user did not complete setting up their acacount
-      // before closing the application
-      if (_auth.currentUser?.displayName == null) {
-        await _navigateToAccountInfo(context);
-      }
-      return cred;
-    });
+    await _auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
   Future<void> logInWithGoogle(BuildContext context) async {
@@ -82,15 +74,7 @@ class AuthService {
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
-    await FirebaseAuth.instance
-        .signInWithCredential(credential)
-        .then((cred) async {
-      // Make the user
-      if (cred.additionalUserInfo!.isNewUser && context.mounted) {
-        await _navigateToAccountInfo(context);
-      }
-      return cred;
-    });
+    await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   Future<void> logout() async {
@@ -104,22 +88,24 @@ class AuthService {
   }
 
   Future<void> updateAccountInfo(
-      String displayName,
-      DateTime? dob,
-      String? sex,
-      double? weight,
-      double? height,
-      double? calorieLimit,
-      ActiveLevel? level,
-      File? profilePic) async {
-    await _auth.currentUser!.updateDisplayName(displayName);
-    if (profilePic != null) {
-      String? photoURL = await uploadFile(profilePic);
-      await _auth.currentUser!.updatePhotoURL(photoURL);
-    }
+      NFUser newUser, File? newAvatar, NFUser? oldUser) async {
+    // Don't do anything if no changes occurred.
+    if (newUser == oldUser && (newUser.isInit ?? false) == true) return;
 
-    await DBService(uid: userUid)
-        .updateUserDetails(dob, weight, sex, height, calorieLimit, level);
+    if (newAvatar != null) {
+      String? photoURL = await uploadFile(newAvatar);
+      await _auth.currentUser!.updatePhotoURL(photoURL);
+      newUser.photoURL = photoURL;
+    }
+    await DBService(uid: userUid).updateUserDetails(
+        newUser.email,
+        newUser.dob,
+        newUser.weight,
+        newUser.sex,
+        newUser.height,
+        newUser.calorieLimit,
+        newUser.activeLevel);
+    await _auth.currentUser!.updateDisplayName(newUser.displayName);
   }
 
   /// Reauthenticates the user then deletes their account.
@@ -209,5 +195,19 @@ class AuthService {
           message:
               'There was an issue changing your password. Please try again later.');
     }
+  }
+
+  Future<bool> checkIfUserExists(String? email) async {
+    if (email == null) return false;
+    return (await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', isEqualTo: email)
+            .get())
+        .docs
+        .isNotEmpty;
+  }
+
+  bool isLoggedOut() {
+    return _auth.currentUser == null;
   }
 }

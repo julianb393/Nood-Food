@@ -6,6 +6,7 @@ import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/services/db_service.dart';
 import 'package:nood_food/views/pages/account/account.dart';
+import 'package:nood_food/views/pages/account/account_info.dart';
 import 'package:nood_food/views/pages/chart/chart.dart';
 import 'package:nood_food/views/pages/home.dart';
 import 'package:nood_food/views/pages/meals/meals.dart';
@@ -24,6 +25,7 @@ class _PageNavigatorState extends State<PageNavigator> {
   double dailyCaloriesAllowed = 3200.0;
   DateTime _selectedDay = DateTime.now();
   late String? accIconUrl;
+  bool _isLoading = true;
 
   int _selectedPageIndex = 0;
   final List<String> _pageTitles = ['Nood Food', 'Meals', 'Chart', 'Account'];
@@ -57,70 +59,92 @@ class _PageNavigatorState extends State<PageNavigator> {
             if (!snapshot.hasData) {
               return const Loader();
             }
-            Widget profilePic = CachedNetworkImage(
-              imageUrl: snapshot.data!.photoURL!,
-              placeholder: (context, val) => const Loader(),
-              errorWidget: (context, url, error) =>
-                  const Icon(Icons.person_outlined),
-              imageBuilder: (context, imageProvider) {
-                return CircleAvatar(
-                  radius: 18,
-                  backgroundImage: imageProvider,
-                );
-              },
-            );
-            return Scaffold(
-                appBar: AppBar(title: Text(_pageTitles[_selectedPageIndex])),
-                bottomNavigationBar: BottomNavigationBar(
-                  showSelectedLabels: false,
-                  showUnselectedLabels: false,
-                  iconSize: 25,
-                  items: <BottomNavigationBarItem>[
-                    const BottomNavigationBarItem(
-                      icon: Icon(Icons.home_outlined),
-                      activeIcon: Icon(Icons.home),
-                      label: 'Home',
+            
+            // Check if user's account initialization was previously completed.
+            if (!(snapshot.data?.isInit ?? false) && _isLoading) {
+              // Route to Account Info to complete registration after this build
+              // completes.
+              WidgetsBinding.instance.addPostFrameCallback((_) async {
+                await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            AccountInfo(user: snapshot.data)));
+              });
+            } else {
+              _isLoading = false;
+            }
+            Widget profilePic = snapshot.data!.photoURL == null
+                ? const Icon(Icons.person_outlined, color: Colors.grey)
+                : CachedNetworkImage(
+                    imageUrl: snapshot.data!.photoURL!,
+                    placeholder: (context, val) => const Loader(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.person_outlined),
+                    imageBuilder: (context, imageProvider) {
+                      return CircleAvatar(
+                        radius: 18,
+                        backgroundImage: imageProvider,
+                      );
+                    },
+                  );
+            return _isLoading
+                ? const Loader()
+                : Scaffold(
+                    appBar:
+                        AppBar(title: Text(_pageTitles[_selectedPageIndex])),
+                    bottomNavigationBar: BottomNavigationBar(
+                      showSelectedLabels: false,
+                      showUnselectedLabels: false,
+                      iconSize: 25,
+                      items: <BottomNavigationBarItem>[
+                        const BottomNavigationBarItem(
+                          icon: Icon(Icons.home_outlined),
+                          activeIcon: Icon(Icons.home),
+                          label: 'Home',
+                        ),
+                        const BottomNavigationBarItem(
+                          icon: Icon(Icons.fastfood_outlined),
+                          activeIcon: Icon(Icons.fastfood),
+                          label: 'Meals',
+                        ),
+                        const BottomNavigationBarItem(
+                            icon: Icon(Icons.show_chart),
+                            activeIcon: Icon(Icons.show_chart_outlined),
+                            label: 'Chart'),
+                        BottomNavigationBarItem(
+                          icon: CircleAvatar(
+                            backgroundColor: Colors.transparent,
+                            radius: 20,
+                            child: profilePic,
+                          ),
+                          activeIcon: CircleAvatar(
+                            backgroundColor: Colors.greenAccent,
+                            radius: 20,
+                            child: profilePic,
+                          ),
+                          label: 'Account',
+                        ),
+                      ],
+                      backgroundColor: Colors.black54,
+                      type: BottomNavigationBarType.fixed,
+                      elevation: 0,
+                      currentIndex: _selectedPageIndex,
+                      selectedItemColor:
+                          const Color.fromARGB(255, 170, 231, 220),
+                      onTap: (index) =>
+                          setState(() => _selectedPageIndex = index),
                     ),
-                    const BottomNavigationBarItem(
-                      icon: Icon(Icons.fastfood_outlined),
-                      activeIcon: Icon(Icons.fastfood),
-                      label: 'Meals',
-                    ),
-                    const BottomNavigationBarItem(
-                        icon: Icon(Icons.show_chart),
-                        activeIcon: Icon(Icons.show_chart_outlined),
-                        label: 'Chart'),
-                    BottomNavigationBarItem(
-                      icon: CircleAvatar(
-                        backgroundColor: Colors.transparent,
-                        radius: 20,
-                        child: profilePic,
+                    body: [
+                      Home(
+                        user: snapshot.data!,
+                        updateDate: _updateSelectedDate,
+                        getSelectedDate: _getSelectedDate,
                       ),
-                      activeIcon: CircleAvatar(
-                        backgroundColor: Colors.greenAccent,
-                        radius: 20,
-                        child: profilePic,
-                      ),
-                      label: 'Account',
-                    ),
-                  ],
-                  backgroundColor: Colors.black54,
-                  type: BottomNavigationBarType.fixed,
-                  elevation: 0,
-                  currentIndex: _selectedPageIndex,
-                  selectedItemColor: const Color.fromARGB(255, 170, 231, 220),
-                  onTap: (index) => setState(() => _selectedPageIndex = index),
-                ),
-                body: [
-                  Home(
-                    user: snapshot.data!,
-                    updateDate: _updateSelectedDate,
-                    getSelectedDate: _getSelectedDate,
-                  ),
-                  Meals(day: _selectedDay),
-                  const Chart(),
-                  Account(user: snapshot.data!),
-                ][_selectedPageIndex]);
+                      Meals(day: _selectedDay),
+                      const Chart(),
+                      Account(user: snapshot.data!),
+                    ][_selectedPageIndex]);
           }),
     );
   }

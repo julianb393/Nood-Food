@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:nood_food/common/date_picker.dart';
 import 'package:nood_food/models/food.dart';
 import 'package:nood_food/models/nf_user.dart';
+import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/util/macronutrient.dart';
 import 'package:nood_food/util/style.dart';
 import 'package:primer_progress_bar/primer_progress_bar.dart';
@@ -48,7 +49,7 @@ class _HomeState extends State<Home> {
     double consumedCalories =
         computeTotalCalories(_consumedProtein, _consumedCarbs, _consumedFat);
     int remainingCalories =
-        (widget.user.calorieLimit! - consumedCalories).toInt();
+        (widget.user.calorieLimit ?? 0 - consumedCalories).toInt();
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(

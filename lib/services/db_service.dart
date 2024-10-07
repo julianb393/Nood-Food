@@ -82,9 +82,18 @@ class DBService {
     double? calorieLimit = data?['calorie_limit'];
     ActiveLevel? activeLevel =
         ActiveLevel.parseFromString(data?['active_level']);
+    bool isInit = data?['is_init'] ?? false;
 
-    user.updateUser(dob, sex, weight, height, calorieLimit, activeLevel);
+    user.updateUser(
+        dob, sex, weight, height, calorieLimit, activeLevel, isInit);
     return user;
+  }
+
+  Future<bool> isRegistrationComplete() async {
+    return await _userCollection
+        .doc(uid)
+        .get()
+        .then((doc) => doc['registration_completed'] ?? false);
   }
 
   Stream<NFUser?> get userAccountInfo {
@@ -179,15 +188,23 @@ class DBService {
     }, SetOptions(merge: true));
   }
 
-  Future<void> updateUserDetails(DateTime? dob, double? weight, String? sex,
-      double? height, double? calorieLimit, ActiveLevel? level) async {
+  Future<void> updateUserDetails(
+      String? email,
+      String? dob,
+      double? weight,
+      String? sex,
+      double? height,
+      double? calorieLimit,
+      ActiveLevel? level) async {
     await _userCollection.doc(uid).set({
-      'dob': dob == null ? null : _df.format(dob),
+      'email': email,
+      'dob': dob,
       'sex': sex,
       'weight': weight,
       'height': height,
       'calorie_limit': calorieLimit,
-      'active_level': level?.name
+      'active_level': level?.name,
+      'is_init': true
     }, SetOptions(merge: true));
   }
 

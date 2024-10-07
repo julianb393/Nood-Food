@@ -369,38 +369,36 @@ class _AccountInfoState extends State<AccountInfo> {
                       setState(() => _isLoading = true);
                       // TOOD: error management
 
-                      // widget was built after registration... we can skip check.\
-                      bool noChanges = false;
-                      if (widget.user != null) {
-                        noChanges = true;
-                        noChanges &= widget.user!.displayName == _displayName;
-                        noChanges &= _selectedImage == null;
-                        noChanges &= widget.user?.dob ==
-                            (_dob != null ? _df.format(_dob!) : null);
-                        noChanges &= widget.user?.sex == _sex;
+                      NFUser? newUser = NFUser(
+                          uid: widget.user?.uid,
+                          email: widget.user?.email,
+                          displayName: _displayName,
+                          photoURL: widget.user?.photoURL,
+                          dob: _dob == null ? null : _df.format(_dob!),
+                          sex: _sex,
+                          weight: _weight,
+                          height: _height,
+                          calorieLimit: _calorieLimit,
+                          activeLevel: _activeLevel,
+                          isInit: widget.user?.isInit ?? false);
 
-                        noChanges &= widget.user?.weight == _weight;
-                        noChanges &= widget.user?.height == _height;
-                        noChanges &= widget.user?.activeLevel == _activeLevel;
-                        noChanges &= widget.user?.calorieLimit == _calorieLimit;
-                      }
+                      // // This was part of the registration process
+                      // if (widget.user == null) {
+                      //   await _authService.updateAccountInfo(
+                      //       newUser, _selectedImage);
+                      //   if (context.mounted) {
+                      //     Navigator.pop(context);
+                      //   }
+                      // }
 
-                      // Don't waste a write request if no changes happened.
-                      if (!noChanges) {
-                        await _authService.updateAccountInfo(
-                          _displayName,
-                          _dob,
-                          _sex,
-                          _weight,
-                          _height,
-                          _calorieLimit,
-                          _activeLevel,
-                          _selectedImage,
-                        );
-                      }
-                      setState(() => _isLoading = false);
+                      // No changes occured to the user information
+                      // if (newUser == widget.user) {
+                      //   setState(() => _isLoading = false);
+                      //   if (context.mounted) Navigator.pop(context);
+                      // }
 
-                      // Otherwise, it was navigated to and we can just pop it.
+                      await _authService.updateAccountInfo(
+                          newUser, _selectedImage, widget.user);
                       if (context.mounted) Navigator.pop(context);
                     },
               child: _isLoading ? const Loader() : const Text('Save'),

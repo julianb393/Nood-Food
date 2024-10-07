@@ -18,7 +18,9 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   final _authService = AuthService();
-  bool _isLoading = false;
+  // 0: email/pass, 1: google
+  final List<bool> _isLoadingButtons = [false, false];
+
   bool _hidePassword = true;
   String inputEmail = '';
   String inputPassword = '';
@@ -81,46 +83,49 @@ class _RegisterState extends State<Register> {
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(45),
                   ),
-                  onPressed: _isLoading
+                  onPressed: _isLoadingButtons.contains(true)
                       ? null
                       : () async {
                           if (!_formKey.currentState!.validate()) return;
 
                           setState(() {
-                            _isLoading = true;
+                            _isLoadingButtons[0] = true;
                           });
 
                           // Would show whether login unsuccessful, otherwise
                           // navigate to home page
-                          String errMsg;
+                          bool isCreated = true;
+                          String errMsg = '';
                           try {
-                            await _authService.registerWithEmail(
+                            isCreated = await _authService.registerWithEmail(
                                 inputEmail, inputPassword, context);
-                            return;
                           } on FirebaseAuthException {
-                            // credentiala issue
+                            // credentials issue, this case should have been
+                            // already covered in the auth service manually.
                             errMsg = 'This email has already been registed.';
                           } catch (error) {
                             // server issue
                             errMsg =
                                 'We\'re having issues connecting to our server. Please try again later...';
                           }
+                          if (!isCreated) {
+                            errMsg = 'This email has already been registed.';
+                            setState(() => _isLoadingButtons[0] = false);
 
-                          setState(() {
-                            _isLoading = false;
-                          });
-
-                          // This check is needed for async functions for snackbars.
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                backgroundColor: Colors.redAccent,
-                                content: Text(errMsg),
-                              ),
-                            );
+                            // This check is needed for async functions for snackbars.
+                            if (context.mounted && errMsg.isNotEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text(errMsg),
+                                ),
+                              );
+                            }
                           }
                         },
-                  child: _isLoading ? const Loader() : const Text('Register'),
+                  child: _isLoadingButtons[0]
+                      ? const Loader()
+                      : const Text('Register'),
                 ),
               ],
             ),
@@ -131,12 +136,14 @@ class _RegisterState extends State<Register> {
             children: [
               GoogleAuthButton(
                 onPressed: () async {
-                  setState(() => _isLoading = true);
+                  // Disables the button
+                  if (_isLoadingButtons.contains(true)) return;
+                  setState(() => _isLoadingButtons[1] = true);
                   await _authService.logInWithGoogle(context);
-                  setState(() => _isLoading = true);
+                  setState(() => _isLoadingButtons[1] = false);
                 },
                 themeMode: ThemeMode.dark,
-                isLoading: _isLoading,
+                isLoading: _isLoadingButtons[1],
                 style: const AuthButtonStyle(
                   buttonType: AuthButtonType.icon,
                   iconType: AuthIconType.outlined,
@@ -163,7 +170,7 @@ class _RegisterState extends State<Register> {
             alignment: Alignment.bottomRight,
             child: TextButton(
               onPressed: () => widget.toggleScreen(),
-              child: const Text('or Login'),
+              child: const Text('Login'),
             ),
           )
         ],
