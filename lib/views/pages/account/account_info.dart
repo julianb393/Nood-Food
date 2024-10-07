@@ -382,21 +382,6 @@ class _AccountInfoState extends State<AccountInfo> {
                           activeLevel: _activeLevel,
                           isInit: widget.user?.isInit ?? false);
 
-                      // // This was part of the registration process
-                      // if (widget.user == null) {
-                      //   await _authService.updateAccountInfo(
-                      //       newUser, _selectedImage);
-                      //   if (context.mounted) {
-                      //     Navigator.pop(context);
-                      //   }
-                      // }
-
-                      // No changes occured to the user information
-                      // if (newUser == widget.user) {
-                      //   setState(() => _isLoading = false);
-                      //   if (context.mounted) Navigator.pop(context);
-                      // }
-
                       await _authService.updateAccountInfo(
                           newUser, _selectedImage, widget.user);
                       if (context.mounted) Navigator.pop(context);
