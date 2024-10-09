@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:nood_food/common/date_picker.dart';
 import 'package:nood_food/models/food.dart';
 import 'package:nood_food/models/nf_user.dart';
-import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/util/macronutrient.dart';
-import 'package:nood_food/util/style.dart';
 import 'package:primer_progress_bar/primer_progress_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -62,7 +60,6 @@ class _HomeState extends State<Home> {
                 selectedDate: widget.getSelectedDate(),
                 changeDay: (day) => widget.updateDate(day),
               ),
-              StyledText.titleLarge('Welcome ${widget.user.displayName}'),
             ],
           ),
           Column(

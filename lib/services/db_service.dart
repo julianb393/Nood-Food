@@ -85,10 +85,10 @@ class DBService {
     ActiveLevel? activeLevel =
         ActiveLevel.parseFromString(data?['active_level']);
     bool isInit = data?['is_init'] ?? false;
-    int daysTracked = data?['days_tracked'] ?? 0;
+    int numDaysTracked = data?['days_tracked'] ?? 0;
 
     user.updateUser(dob, sex, weight, height, calorieLimit, activeLevel, isInit,
-        daysTracked);
+        numDaysTracked);
     return user;
   }
 

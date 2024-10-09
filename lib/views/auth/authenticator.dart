@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nood_food/models/nf_user.dart';
-import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/views/auth/login_register_selector.dart';
 import 'package:provider/provider.dart';
 import 'package:nood_food/views/page_navigator.dart';

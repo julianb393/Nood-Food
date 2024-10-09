@@ -29,10 +29,6 @@ class AuthService {
   /// logged in or not.
   Stream<NFUser?> get user {
     return _auth.authStateChanges().map(_parseUserFromFirebaseUser);
-
-    // return StreamGroup.merge([_auth.authStateChanges(), _auth.userChanges()])
-    // .asBroadcastStream()
-    // .map(_parseUserFromFirebaseUser);
   }
 
   String? get userUid {

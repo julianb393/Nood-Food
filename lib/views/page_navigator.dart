@@ -5,6 +5,7 @@ import 'package:nood_food/models/food.dart';
 import 'package:nood_food/models/nf_user.dart';
 import 'package:nood_food/services/auth_service.dart';
 import 'package:nood_food/services/db_service.dart';
+import 'package:nood_food/util/avatar.dart';
 import 'package:nood_food/views/pages/account/account.dart';
 import 'package:nood_food/views/pages/account/account_info.dart';
 import 'package:nood_food/views/pages/chart/chart.dart';
@@ -74,20 +75,6 @@ class _PageNavigatorState extends State<PageNavigator> {
             } else {
               _isLoading = false;
             }
-            Widget profilePic = snapshot.data!.photoURL == null
-                ? const Icon(Icons.person_outlined, color: Colors.grey)
-                : CachedNetworkImage(
-                    imageUrl: snapshot.data!.photoURL!,
-                    placeholder: (context, val) => const Loader(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.person_outlined),
-                    imageBuilder: (context, imageProvider) {
-                      return CircleAvatar(
-                        radius: 18,
-                        backgroundImage: imageProvider,
-                      );
-                    },
-                  );
             return _isLoading
                 ? const Loader()
                 : Scaffold(
@@ -116,12 +103,18 @@ class _PageNavigatorState extends State<PageNavigator> {
                           icon: CircleAvatar(
                             backgroundColor: Colors.transparent,
                             radius: 20,
-                            child: profilePic,
+                            child: Avatar(
+                              radius: 20,
+                              avatarUrl: snapshot.data?.photoURL,
+                            ),
                           ),
                           activeIcon: CircleAvatar(
                             backgroundColor: Colors.greenAccent,
                             radius: 20,
-                            child: profilePic,
+                            child: Avatar(
+                              radius: 19,
+                              avatarUrl: snapshot.data?.photoURL,
+                            ),
                           ),
                           label: 'Account',
                         ),
