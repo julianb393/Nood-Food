@@ -83,10 +83,12 @@ class AuthService {
     });
   }
 
-  Future<void> updateAccountInfo(
+  Future<NFUser> updateAccountInfo(
       NFUser newUser, File? newAvatar, NFUser? oldUser) async {
     // Don't do anything if no changes occurred.
-    if (newUser == oldUser && (newUser.isInit ?? false) == true) return;
+    if (newUser == oldUser && newAvatar == null && newUser.isInit == true) {
+      return newUser;
+    }
 
     if (newAvatar != null) {
       String? photoURL = await uploadFile(newAvatar);
@@ -102,6 +104,7 @@ class AuthService {
         newUser.calorieLimit,
         newUser.activeLevel);
     await _auth.currentUser!.updateDisplayName(newUser.displayName);
+    return newUser;
   }
 
   /// Reauthenticates the user then deletes their account.

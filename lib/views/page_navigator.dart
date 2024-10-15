@@ -31,6 +31,13 @@ class _PageNavigatorState extends State<PageNavigator> {
   int _selectedPageIndex = 0;
   final List<String> _pageTitles = ['Nood Food', 'Meals', 'Chart', 'Account'];
 
+  late NFUser? currUserInfo;
+
+  // Used for update and rebuild when account info was updated on the spot.
+  void _updateUserDisplayInfo(NFUser? newUserInfo) {
+    setState(() => currUserInfo = newUserInfo);
+  }
+
   // Will allow the home to control the date, which can get shared with others.
   void _updateSelectedDate(DateTime newDate) {
     setState(() {
@@ -47,6 +54,7 @@ class _PageNavigatorState extends State<PageNavigator> {
     super.initState();
     _authService = AuthService();
     _dbService = DBService(uid: _authService.userUid);
+    currUserInfo = null;
   }
 
   @override
@@ -60,7 +68,7 @@ class _PageNavigatorState extends State<PageNavigator> {
             if (!snapshot.hasData) {
               return const Loader();
             }
-            
+
             // Check if user's account initialization was previously completed.
             if (!(snapshot.data?.isInit ?? false) && _isLoading) {
               // Route to Account Info to complete registration after this build
@@ -75,6 +83,7 @@ class _PageNavigatorState extends State<PageNavigator> {
             } else {
               _isLoading = false;
             }
+            currUserInfo = snapshot.data;
             return _isLoading
                 ? const Loader()
                 : Scaffold(
@@ -105,7 +114,7 @@ class _PageNavigatorState extends State<PageNavigator> {
                             radius: 20,
                             child: Avatar(
                               radius: 20,
-                              avatarUrl: snapshot.data?.photoURL,
+                              avatarUrl: currUserInfo?.photoURL,
                             ),
                           ),
                           activeIcon: CircleAvatar(
@@ -113,7 +122,7 @@ class _PageNavigatorState extends State<PageNavigator> {
                             radius: 20,
                             child: Avatar(
                               radius: 19,
-                              avatarUrl: snapshot.data?.photoURL,
+                              avatarUrl: currUserInfo?.photoURL,
                             ),
                           ),
                           label: 'Account',
@@ -130,13 +139,16 @@ class _PageNavigatorState extends State<PageNavigator> {
                     ),
                     body: [
                       Home(
-                        user: snapshot.data!,
+                        user: currUserInfo!,
                         updateDate: _updateSelectedDate,
                         getSelectedDate: _getSelectedDate,
                       ),
                       Meals(day: _selectedDay),
                       const Chart(),
-                      Account(user: snapshot.data!),
+                      Account(
+                        user: currUserInfo!,
+                        onUserInfoUpdate: _updateUserDisplayInfo,
+                      ),
                     ][_selectedPageIndex]);
           }),
     );

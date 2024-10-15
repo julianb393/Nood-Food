@@ -7,16 +7,22 @@ import 'package:nood_food/views/pages/account/account_info.dart';
 import 'package:nood_food/views/pages/account/change_password.dart';
 import 'package:nood_food/views/pages/account/delete_account_dialog.dart';
 
-class Account extends StatelessWidget {
+class Account extends StatefulWidget {
   final NFUser user;
-  const Account({super.key, required this.user});
+  final Function? onUserInfoUpdate;
+  const Account({super.key, required this.user, this.onUserInfoUpdate});
 
+  @override
+  State<Account> createState() => _AccountState();
+}
+
+class _AccountState extends State<Account> {
   Widget createProfile() {
     return Column(
       children: [
-        Avatar(avatarUrl: user.photoURL, radius: 30),
+        Avatar(avatarUrl: widget.user.photoURL, radius: 30),
         const SizedBox(height: 10),
-        Text(user.displayName ?? '')
+        Text(widget.user.displayName ?? '')
       ],
     );
   }
@@ -25,7 +31,7 @@ class Account extends StatelessWidget {
     return Column(
       children: [
         const Text('Days Tracked'),
-        Text('${user.numDaysTracked}'),
+        Text('${widget.user.numDaysTracked}'),
       ],
     );
   }
@@ -34,7 +40,7 @@ class Account extends StatelessWidget {
     return Column(
       children: [
         const Text('Current Weight'),
-        Text('${user.weight ?? 0.0} lbs')
+        Text('${widget.user.weight ?? 0.0} lbs')
       ],
     );
   }
@@ -67,8 +73,9 @@ class Account extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => AccountInfo(user: user)),
-                  ),
+                        builder: (context) => AccountInfo(user: widget.user)),
+                  ).then(
+                      (newUserInfo) => widget.onUserInfoUpdate!(newUserInfo)),
                   icon: Icons.person,
                 ),
                 CardButton(

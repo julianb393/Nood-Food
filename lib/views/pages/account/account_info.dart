@@ -369,7 +369,7 @@ class _AccountInfoState extends State<AccountInfo> {
                       setState(() => _isLoading = true);
                       // TOOD: error management
 
-                      NFUser? newUser = NFUser(
+                      NFUser newUser = NFUser(
                           uid: widget.user?.uid,
                           email: widget.user?.email,
                           displayName: _displayName,
@@ -383,9 +383,9 @@ class _AccountInfoState extends State<AccountInfo> {
                           isInit: widget.user?.isInit ?? false,
                           numDaysTracked: widget.user?.numDaysTracked ?? 0);
 
-                      await _authService.updateAccountInfo(
+                      newUser = await _authService.updateAccountInfo(
                           newUser, _selectedImage, widget.user);
-                      if (context.mounted) Navigator.pop(context);
+                      if (context.mounted) Navigator.pop(context, newUser);
                     },
               child: _isLoading ? const Loader() : const Text('Save'),
             )),
