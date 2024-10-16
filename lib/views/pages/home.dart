@@ -58,43 +58,47 @@ class _HomeState extends State<Home> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          DatePicker(
-            selectedDate: widget.getSelectedDate(),
-            changeDay: (day) => widget.updateDate(day),
-          ),
-          DashedCircularProgressBar.aspectRatio(
-            aspectRatio: 1.5,
-            progress: progress,
-            maxProgress: isLimitSet ? widget.user.calorieLimit! : 1,
-            foregroundColor: isLimitSet && remainingCalories < 0
-                ? Colors.red
-                : progressColor,
-            backgroundColor: Colors.grey,
-            foregroundStrokeWidth: 20,
-            backgroundStrokeWidth: 20,
-            seekSize: remainingCalories <= 0 ? 0 : 15,
-            seekColor: Colors.greenAccent,
-            animation: true,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '${consumedCalories.toInt()}',
-                  style: TextStyle(
-                      color: isLimitSet && remainingCalories < 0
-                          ? Colors.red
-                          : progressColor,
-                      fontSize: 40),
-                ),
-                const Text(
-                  'Calories Consumed',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
+          Expanded(
+            child: DatePicker(
+              selectedDate: widget.getSelectedDate(),
+              changeDay: (day) => widget.updateDate(day),
             ),
           ),
-          // const SizedBox(height: 40),
+          Expanded(
+            child: DashedCircularProgressBar.aspectRatio(
+              aspectRatio: 1.5,
+              progress: progress,
+              maxProgress: isLimitSet ? widget.user.calorieLimit! : 1,
+              foregroundColor: isLimitSet && remainingCalories < 0
+                  ? Colors.red
+                  : progressColor,
+              backgroundColor: Colors.grey,
+              foregroundStrokeWidth: 20,
+              backgroundStrokeWidth: 20,
+              seekSize: remainingCalories <= 0 ? 0 : 15,
+              seekColor: Colors.greenAccent,
+              animation: true,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${consumedCalories.toInt()}',
+                    style: TextStyle(
+                        color: isLimitSet && remainingCalories < 0
+                            ? Colors.red
+                            : progressColor,
+                        fontSize: 40),
+                  ),
+                  const Text(
+                    'Calories Consumed',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 40),
           Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
