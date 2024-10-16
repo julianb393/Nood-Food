@@ -47,7 +47,12 @@ class _HomeState extends State<Home> {
     double consumedCalories =
         computeTotalCalories(_consumedProtein, _consumedCarbs, _consumedFat);
     int remainingCalories =
-        (widget.user.calorieLimit ?? 0 - consumedCalories).toInt();
+        ((widget.user.calorieLimit ?? 0) - consumedCalories).toInt();
+    bool isLimitSet = (widget.user.calorieLimit ?? 0) > 0;
+    Color progressColor = isLimitSet ? Colors.green : Colors.amber;
+    double progress =
+        isLimitSet ? min(widget.user.calorieLimit!, consumedCalories) : 1;
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -67,10 +72,12 @@ class _HomeState extends State<Home> {
             children: [
               DashedCircularProgressBar.aspectRatio(
                 aspectRatio: 1.5,
-                progress: min(widget.user.calorieLimit!, consumedCalories),
-                maxProgress: widget.user.calorieLimit!,
+                progress: progress,
+                maxProgress: isLimitSet ? widget.user.calorieLimit! : 1,
                 foregroundColor:
-                    remainingCalories < 0 ? Colors.red : Colors.green,
+                    isLimitSet && remainingCalories < 0
+                    ? Colors.red
+                    : progressColor,
                 backgroundColor: Colors.grey,
                 foregroundStrokeWidth: 20,
                 backgroundStrokeWidth: 20,
@@ -84,8 +91,9 @@ class _HomeState extends State<Home> {
                     Text(
                       '${consumedCalories.toInt()}',
                       style: TextStyle(
-                          color:
-                              remainingCalories < 0 ? Colors.red : Colors.green,
+                          color: isLimitSet && remainingCalories < 0
+                              ? Colors.red
+                              : progressColor,
                           fontSize: 40),
                     ),
                     const Text(
@@ -115,13 +123,14 @@ class _HomeState extends State<Home> {
                   )
                 ],
               ),
-              widget.user.calorieLimit != null
+              isLimitSet
                   ? Text(
                       remainingCalories >= 0
                           ? 'You have $remainingCalories calories remaining'
                           : 'You have consumed a surplus of ${(remainingCalories) * -1} calories',
                     )
-                  : const SizedBox(),
+                  : const Text(
+                      'Set your calorie limit in your Account settings'),
             ],
           )
         ],
