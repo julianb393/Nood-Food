@@ -58,52 +58,46 @@ class _HomeState extends State<Home> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DatePicker(
-                selectedDate: widget.getSelectedDate(),
-                changeDay: (day) => widget.updateDate(day),
-              ),
-            ],
+          DatePicker(
+            selectedDate: widget.getSelectedDate(),
+            changeDay: (day) => widget.updateDate(day),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              DashedCircularProgressBar.aspectRatio(
-                aspectRatio: 1.5,
-                progress: progress,
-                maxProgress: isLimitSet ? widget.user.calorieLimit! : 1,
-                foregroundColor:
-                    isLimitSet && remainingCalories < 0
-                    ? Colors.red
-                    : progressColor,
-                backgroundColor: Colors.grey,
-                foregroundStrokeWidth: 20,
-                backgroundStrokeWidth: 20,
-                seekSize: remainingCalories <= 0 ? 0 : 15,
-                seekColor: Colors.greenAccent,
-                animation: true,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '${consumedCalories.toInt()}',
-                      style: TextStyle(
-                          color: isLimitSet && remainingCalories < 0
-                              ? Colors.red
-                              : progressColor,
-                          fontSize: 40),
-                    ),
-                    const Text(
-                      'Calories Consumed',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
+          DashedCircularProgressBar.aspectRatio(
+            aspectRatio: 1.5,
+            progress: progress,
+            maxProgress: isLimitSet ? widget.user.calorieLimit! : 1,
+            foregroundColor: isLimitSet && remainingCalories < 0
+                ? Colors.red
+                : progressColor,
+            backgroundColor: Colors.grey,
+            foregroundStrokeWidth: 20,
+            backgroundStrokeWidth: 20,
+            seekSize: remainingCalories <= 0 ? 0 : 15,
+            seekColor: Colors.greenAccent,
+            animation: true,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '${consumedCalories.toInt()}',
+                  style: TextStyle(
+                      color: isLimitSet && remainingCalories < 0
+                          ? Colors.red
+                          : progressColor,
+                      fontSize: 40),
                 ),
-              ),
-              const SizedBox(height: 40),
+                const Text(
+                  'Calories Consumed',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+          // const SizedBox(height: 40),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
               PrimerProgressBar(
                 segments: [
                   Segment(
@@ -130,9 +124,9 @@ class _HomeState extends State<Home> {
                           : 'You have consumed a surplus of ${(remainingCalories) * -1} calories',
                     )
                   : const Text(
-                      'Set your calorie limit in your Account settings'),
+                      'Set your calorie limit in your Account settings')
             ],
-          )
+          ),
         ],
       ),
     );

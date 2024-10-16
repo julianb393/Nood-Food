@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:nood_food/common/loader.dart';
 import 'package:nood_food/models/food.dart';
