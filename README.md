@@ -60,8 +60,6 @@ The purpose of this project was to provide a means to integrate the Flutter fram
 
 Of course, this project was developed for my own educational purposes, I have plans to enhance certain aspects about it. For more information involving that, see [all active issues][issues-url].
 
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
